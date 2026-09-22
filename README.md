@@ -1,0 +1,86 @@
+# 3D shirt designer
+
+React + Vite frontend, Three.js shirt preview, and a separate Express backend. Customize the shirt color, upload artwork, or generate a design from a prompt.
+
+## Free Hugging Face image generation
+
+The default backend calls the public [FLUX.1 Schnell ZeroGPU Space](https://huggingface.co/spaces/black-forest-labs/FLUX.1-schnell) through Gradio. It does not use Hugging Face Inference Providers credits and never automatically falls back to a paid provider.
+
+With `HF_TOKEN` blank, the backend attempts anonymous access to the public Space, as used for the included tiger sample. Access, queues, and free GPU quotas can vary. If you configure a token, all users of this backend share that account's quota. See [current quotas](https://huggingface.co/docs/hub/spaces-zerogpu). This setup is intended for a personal prototype, not an unrestricted public generation service.
+
+### Setup
+
+Use Node.js 22 or newer. Install dependencies in both directories:
+
+```sh
+# Project directory
+npm install
+cd serveur
+npm install
+```
+
+Use `serveur/.env.example` as a reference. If `serveur/.env` already exists, update these entries while preserving other settings:
+
+```dotenv
+IMAGE_PROVIDER=huggingface
+HF_TOKEN=
+HF_SPACE_ID=black-forest-labs/FLUX.1-schnell
+PORT=8080
+```
+
+`HF_TOKEN` is optional for anonymous access to this public Space. If Hugging Face requires sign-in, create a Read token in [Hugging Face Access Tokens](https://huggingface.co/settings/tokens). Put the token only in `serveur/.env`; never in chat, frontend code, or a `VITE_` variable. Revoke shared tokens and create a replacement. Environment files are ignored by Git; the example contains no secrets.
+
+Start the backend from `serveur/` with `npm run dev`. In a second terminal, start the frontend from the project directory with `npm run dev`. Open the Vite URL, choose Customize, open the existing AI tab, describe the design and click AI Full. The original interface is preserved; AI Logo has been removed. Art direction is inferred from the prompt. Restart the backend after changing environment variables.
+
+Full designs use the garment's native texture coordinates across the front, back and sleeves, preserving its fabric shading. Generated designs automatically hide the existing logo and coordinate collar/cuff trim with the image's dominant color. The existing color picker changes the trim while a full design is active. Image uploads and the original shirt filter buttons remain available.
+
+The Space must expose `/infer` with inputs `prompt`, `seed`, `randomize_seed`, `width`, `height`, and `num_inference_steps`. `HF_SPACE_ID` may point to a compatible public clone; arbitrary Spaces can have different APIs. Images are requested at 1024 × 1024 with four steps. The full-shirt brief requests flat edge-to-edge textile artwork, coordinated colors, medium-scale motifs and matching edges, without mockups, folds, lighting or isolated logos. These are generation instructions; exact colors and seamless repeats are not guaranteed. Short descriptions of one or two sentences work best with the model's limited prompt length.
+
+### Generation API
+
+`POST /api/v1/dalle` accepts a JSON body:
+
+| Field | Accepted value |
+| --- | --- |
+| `prompt` | Required nonempty string, up to 2000 characters. |
+| `mode` | `full` by default. Explicit `logo` remains available for older clients and the sample script. |
+| `style` | `sport` (default), `minimal`, `botanical`, or `abstract`. |
+| `palette` | Optional array of 2–4 colors in `#RRGGBB` format. These guide the generated textile's colors. |
+| `seed` | Optional integer from 0 to 2147483647. Omit to generate a new variation. |
+
+For example:
+
+```json
+{
+  "prompt": "Flowing angular bands with restrained gold accents",
+  "mode": "full",
+  "style": "sport",
+  "palette": ["#102A43", "#A51C30", "#F4C95D"]
+}
+```
+
+Successful Hugging Face responses contain `photo` (base64 image bytes), `mimeType`, and `seed` (the actual seed reported by the Space, or `null` if unavailable). Reuse that seed with the same prompt, style and palette to request the same design; reproducibility also depends on the Space's model and implementation staying unchanged. Invalid generation options return HTTP 400 before contacting the Space.
+
+### Hosting and errors
+
+Development uses `http://localhost:8080/api/v1/dalle`; production uses `/api/v1/dalle`. For a separate backend host, set the frontend build variable `VITE_API_URL` to its full generation endpoint. For the relative production URL, configure your host to proxy `/api` to Express.
+
+Invalid supplied tokens, sign-in requirements from the Space, exhausted free quota, and unavailable Spaces produce actionable errors. A missing token does not block the request locally. The UI keeps the prompt on failure and times out after three minutes; the backend stops waiting after two and a half minutes. Cancellation is best effort: work already running on the Space may still consume GPU time.
+
+Legacy `openai`, `gemini`, and `pollinations` branches require explicit `IMAGE_PROVIDER` selection; their availability and pricing are separate. OpenAI credentials are unnecessary for the Hugging Face integration. Keep `IMAGE_PROVIDER=huggingface` for the free Spaces workflow.
+
+## Checks
+
+```sh
+# Project directory
+npm run build
+npm run lint
+
+# serveur directory
+npm test
+```
+
+Backend tests mock Space responses; they never generate images or spend credits. The project has existing frontend lint issues; see the historical [scan](PROJECT_SCAN.md).
+
+![Shirt preview](public/CaptureSH.PNG)
+# usa-thirduin

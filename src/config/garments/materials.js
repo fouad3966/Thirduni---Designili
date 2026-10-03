@@ -1,17 +1,18 @@
 import { DoubleSide } from 'three';
 
-// Each garment keeps its authored normal map and UVs. Desaturating the native
-// color atlas preserves subtle fabric detail when a color or AI print is used.
-const detailLevels = { dress: 0.3, suit: 0.018, hoodie: 0.001 };
+// Preserve authored UVs and cloth normals. Only neutralize diffuse atlases
+// suitable for detail: the hoodie's nearly black print exaggerates artifacts
+// when used as shading on a light fabric color.
+const detailLevels = { dress: 0.3, suit: 0.018 };
 
 export function createTailoredMaterial(source, garment) {
   const material = source.clone();
-  const detailMap = source.map;
+  const detailMap = garment === 'hoodie' ? null : source.map;
   material.color.set('#ffffff');
   material.metalness = 0;
   material.roughness = garment === 'dress' ? 0.78 : 0.93;
   material.side = DoubleSide;
-  material.normalScale.setScalar(garment === 'hoodie' ? 0.65 : 0.5);
+  material.normalScale.setScalar(garment === 'hoodie' ? 0.15 : 0.5);
 
   if (detailMap) {
     material.onBeforeCompile = shader => {
@@ -46,4 +47,3 @@ export function updateTailoredMaterial(material, texture, design) {
   }
   material.color.set(design.isFullTexture ? '#ffffff' : design.color);
 }
-

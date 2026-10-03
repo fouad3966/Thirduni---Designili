@@ -26,6 +26,7 @@ const designKeys = Object.keys(defaultDesign('tshirt'));
 const savedDesigns = new Map();
 
 const state = proxy({
+  wearItOpen: false,
   intro: !params.has('preview') && !showTiger && !showFabric,
   preview: params.has('preview'),
   garment: initialGarment,

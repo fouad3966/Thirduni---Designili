@@ -10,6 +10,7 @@ const CanvasModel = () => {
   const snap = useSnapshot(state);
   return (
     <Canvas
+      frameloop={snap.wearItOpen ? 'never' : 'always'}
       shadows
       camera={{ position: [0, 0, 0], fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}

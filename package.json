@@ -4,12 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "sync:tryon-assets": "node scripts/sync-tryon-assets.mjs",
+    "test:tryon": "node --test src/tryon/*.test.js",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@decartai/sdk": "0.2.3",
+    "@mediapipe/tasks-vision": "1.0.1",
     "@react-three/drei": "^9.107.0",
     "@react-three/fiber": "^8.16.8",
     "framer-motion": "^11.2.10",

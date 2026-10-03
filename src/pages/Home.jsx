@@ -35,11 +35,14 @@ const Home = () => {
                                 {" "}and define your own style.
                             </p>
                             <GarmentSelector />
+                            <div className="flex gap-3 w-fit">
                             <CustomButtom
                                 type="filled"
                                 title="Customize it"
-                                customStyles="w-fit px-4 font-bold text-sm py-2.5"
+                                customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap"
                                 handleClick={() => state.intro = false} />
+                            <CustomButtom type="filled" title="Wear it" customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap" handleClick={() => state.wearItOpen = true} disabled={Boolean(snap.generatingGarment)} />
+                            </div>
                         </motion.div>
                     </motion.div>
 

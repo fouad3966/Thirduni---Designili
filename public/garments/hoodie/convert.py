@@ -1,5 +1,6 @@
-import argparse, json, math, struct, shutil
+import argparse, io, json, math, struct, shutil
 from pathlib import Path
+from PIL import Image
 
 parser = argparse.ArgumentParser(description='Convert the CC-BY MakeHuman hoodie OBJ into portable GLBs.')
 parser.add_argument('--source', type=Path, default=Path(__file__).resolve().parent)
@@ -76,7 +77,7 @@ def write_glb(relaxed=False):
         for pair in triangle:
             if pair not in pairs:
                 pairs[pair]=len(pairs); vi,ti=pair
-                positions.extend(posed[vi]);normals.extend(source_normals[vi]);texcoords.extend([uvs[ti][0],1-uvs[ti][1]])
+                positions.extend(posed[vi]);normals.extend(source_normals[vi]);texcoords.extend(uvs[ti])
             (zipper_indices if triangle[0][0] in zipper_vertices else indices).append(pairs[pair])
     binary=bytearray(); views=[]; accessors=[]
     def append(data,target=None):
@@ -95,7 +96,12 @@ def write_glb(relaxed=False):
     zipper_accessor=accessor(zipper_indices,1,5123)
     images=[]
     for name in ['hoodietex1.png','normalshoodie.png']:
-        images.append({'bufferView':append((SOURCE/name).read_bytes()),'mimeType':'image/png','name':name})
+        # Keep the authored UV tangent orientation. Reflect image rows instead
+        # of V coordinates so the normal map's green direction stays correct.
+        texture = Image.open(SOURCE/name).transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+        encoded_texture = io.BytesIO()
+        texture.save(encoded_texture, format='PNG', optimize=True)
+        images.append({'bufferView':append(encoded_texture.getvalue()),'mimeType':'image/png','name':name})
     gltf={
       'asset':{'version':'2.0','generator':'Local OBJ to glTF conversion','copyright':'Hooded Sweat Jacket by Elvaerwyn, CC BY 4.0'},
       'scene':0,'scenes':[{'nodes':[0,1]}],'nodes':[{'name':'fabric','mesh':0,'extras':{'role':'fabric'}},{'name':'zipper','mesh':1,'extras':{'role':'metal'}}],

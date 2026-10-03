@@ -16,7 +16,7 @@ Suggested attribution: “Hooded Sweat Jacket by Elvaerwyn, CC BY 4.0, via MakeH
 
 `model.glb` is the version used by the app. It contains two meshes: `fabric` (19,362 triangles) and `zipper` (212 triangles). Both have mesh-role metadata. The original geometry has 9,935 positions and 9,787 quad faces; triangulation and UV splits produce 16,615 glTF vertices and 19,574 triangles.
 
-The conversion preserves the authored surface and UV islands, computes smooth normals across UV seams, centers and scales the model, and rotates the sleeves gradually into a relaxed presentation pose. The front is +Z, Y is up, and the final bounds are approximately 0.570 × 0.625 × 0.343 units. No avatar is included.
+The conversion preserves the authored surface and UV islands, computes smooth normals across UV seams, centers and scales the model, and rotates the sleeves gradually into a relaxed presentation pose. Texture rows are reflected during conversion while native UV coordinates are retained, preserving tangent-space normal orientation. The front is +Z, Y is up, and the final bounds are approximately 0.570 × 0.625 × 0.343 units. No avatar is included.
 
 Both native 1024 × 1024 PNGs are embedded in the GLB and retained separately:
 
@@ -25,7 +25,7 @@ Both native 1024 × 1024 PNGs are embedded in the GLB and retained separately:
 
 There is no separate ambient-occlusion map. `preview.png` is the creator/collection preview. `ladieshoodiedown1.obj` and `ladieshoodiedown1.mhmat` retain the original authored inputs and embedded credit.
 
-Rebuild with Python's standard library; no packages are required:
+Rebuild with Python and Pillow:
 
 ```sh
 python3 public/garments/hoodie/convert.py

@@ -69,6 +69,16 @@ Invalid supplied tokens, sign-in requirements from the Space, exhausted free quo
 
 Legacy `openai`, `gemini`, and `pollinations` branches require explicit `IMAGE_PROVIDER` selection; their availability and pricing are separate. OpenAI credentials are unnecessary for the Hugging Face integration. Keep `IMAGE_PROVIDER=huggingface` for the free Spaces workflow.
 
+## Wear it — free live camera preview
+
+Choose a garment, then click **Wear it** on the homepage or in the editor. Allow camera access and step back until your shoulders and hips are visible. Your selected color, uploaded artwork or generated fabric appears on the 3D garment. Size and Position adjust the approximate fit. Close the window to stop the camera; switching away from the tab pauses it.
+
+This feature runs MediaPipe Pose Landmarker on the device in a worker. It needs no API key, generation backend, or paid credits. Its runtime and model are included locally under `public/tryon/`; use HTTPS when deployed, or localhost during development. The preview requests video only and does not upload or record camera frames. Runtime metrics requests are blocked inside the tracker. Model sources and licenses are in [the tracking asset notice](public/tryon/README.md).
+
+This is a body-tracked 3D overlay, not photorealistic video generation or a clothing-size measurement. Garment sleeves do not bend independently with your arms, and your existing clothes are not removed. Face the camera and keep your arms relaxed. Full dress/suit previews need enough room for your body to be in frame. These limitations differ from [AnyWear's Decart-powered generative try-on](https://docs.platform.decart.ai/models/realtime/virtual-try-on), whose API has separate paid usage. No Decart integration or paid fallback is enabled.
+
+The MediaPipe package is pinned. If intentionally upgrading it, run `npm run sync:tryon-assets`, update the asset notice and test initialization in supported browsers; JavaScript and WASM versions must match. `npm run test:tryon` checks fitting and camera-worker lifecycle without activating a webcam.
+
 ## Checks
 
 ```sh

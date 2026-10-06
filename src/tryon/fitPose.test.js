@@ -47,7 +47,6 @@ test('missing, low confidence, cropped and narrow sideways poses hide the garmen
   assert.equal(getPoseFit(null, 640, 480).visible, false);
   for (const mutate of [
     landmarks => { landmarks[11].visibility = 0.2; },
-    landmarks => { landmarks[23].y = 1.1; },
     landmarks => { landmarks[12].x = NaN; },
     landmarks => { landmarks[11].x = 0.51; landmarks[12].x = 0.49; },
     landmarks => { landmarks[23].y = 0.05; landmarks[24].y = 0.05; },
@@ -56,6 +55,44 @@ test('missing, low confidence, cropped and narrow sideways poses hide the garmen
     mutate(landmarks);
     assert.equal(getPoseFit(landmarks, 640, 480).visible, false);
   }
+});
+
+test('a top fits from the shoulders alone, while a dress waits for the hips', () => {
+  const landmarks = pose();
+  landmarks[23].y = 1.1;
+  landmarks[24].y = 1.1;
+  const shirt = getPoseFit(landmarks, 640, 480, 'tshirt');
+  assert.equal(shirt.visible, true);
+  assert.equal(shirt.hipsVisible, false);
+  assert.equal(getPoseFit(landmarks, 640, 480, 'dress').visible, false);
+  assert.equal(getPoseFit(landmarks, 640, 480, 'suit').visible, false);
+  assert.equal(getPoseFit(landmarks, 640, 480, 'hoodie').visible, true);
+
+  // The estimated torso follows the model's own proportions, so the garment
+  // keeps its shape: width and length scale together from the shoulders.
+  const shoulderPixels = (0.65 - 0.35) * 640;
+  assert.ok(Math.abs(shirt.scaleX - shoulderPixels / GARMENT_FIT.tshirt.shoulderWidth) < 1e-8);
+  assert.ok(Math.abs(shirt.scaleX - shirt.scaleY) < 1e-8);
+  assert.equal(shirt.center.x, 320);
+  assert.ok(Math.abs(shirt.center.y - GARMENT_FIT.tshirt.shoulderY * shirt.scaleY - 120) < 1e-8);
+});
+
+test('shoulders-only fitting still rejects a camera that is too close or sideways', () => {
+  const cropped = () => {
+    const landmarks = pose();
+    landmarks[23].y = 1.1;
+    landmarks[24].y = 1.1;
+    return landmarks;
+  };
+  const tooClose = cropped();
+  tooClose[11].x = 0.95;
+  tooClose[12].x = 0.05;
+  assert.equal(getPoseFit(tooClose, 640, 480, 'tshirt').visible, false);
+
+  const sideways = cropped();
+  sideways[11].y = 0.55;
+  sideways[12].y = 0.1;
+  assert.equal(getPoseFit(sideways, 640, 480, 'tshirt').visible, false);
 });
 
 test('long garments use torso anchors instead of shrinking the complete outfit into the torso', () => {

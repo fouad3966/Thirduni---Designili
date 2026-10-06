@@ -25,10 +25,10 @@ async function initialize() {
   const { FilesetResolver, PoseLandmarker } = await import(/* @vite-ignore */ runtimeUrl);
   const vision = await FilesetResolver.forVisionTasks('/tryon/wasm');
   let previousError;
-  // Lite runs in this dedicated worker, so CPU inference keeps the UI free and
-  // avoids GPU shader warmup stalls on software renderers and older devices.
-  // GPU remains a fallback when the CPU delegate cannot initialize.
-  for (const delegate of ['CPU', 'GPU']) {
+  // GPU inference is several times faster than CPU here, and the garment can
+  // only sit still on a moving body if each frame comes back quickly. CPU
+  // remains the fallback for software renderers and older devices.
+  for (const delegate of ['GPU', 'CPU']) {
     try {
       landmarker = await PoseLandmarker.createFromOptions(vision, {
         baseOptions: { modelAssetPath: '/tryon/pose_landmarker_lite.task', delegate },
@@ -36,7 +36,9 @@ async function initialize() {
         minPoseDetectionConfidence: 0.55,
         minPosePresenceConfidence: 0.55,
         minTrackingConfidence: 0.55,
-        outputSegmentationMasks: false,
+        // The body mask keeps the garment inside your silhouette instead of
+        // floating over the room behind you.
+        outputSegmentationMasks: true,
       });
       initialized = true;
       self.postMessage({ type: 'ready', delegate });
@@ -44,7 +46,7 @@ async function initialize() {
     } catch (error) {
       landmarker?.close();
       landmarker = undefined;
-      if (delegate === 'CPU') previousError = error;
+      if (delegate === 'GPU') previousError = error;
       else throw new Error(`Pose tracking could not start: ${errorMessage(error || previousError)}`);
     }
   }
@@ -59,7 +61,27 @@ self.onmessage = async event => {
     try {
       if (!initialized || !landmarker) throw new Error('Pose tracking is not ready.');
       const result = landmarker.detectForVideo(bitmap, timestamp);
-      self.postMessage({ type: 'pose', frameId, landmarks: result.landmarks[0] || null });
+      // The mask is a float per pixel: how certain that pixel is part of you.
+      // It is packed into bytes here so the frame transfers without a copy.
+      const found = result.segmentationMasks?.[0];
+      let mask = null;
+      try {
+        const values = found?.getAsFloat32Array();
+        if (values) {
+          const coverage = new Uint8Array(values.length);
+          for (let index = 0; index < values.length; index++) {
+            coverage[index] = values[index] * 255;
+          }
+          mask = { coverage, width: found.width, height: found.height };
+        }
+      } finally {
+        found?.close();
+      }
+      self.postMessage({
+        type: 'pose', frameId, mask,
+        landmarks: result.landmarks[0] || null,
+        worldLandmarks: result.worldLandmarks?.[0] || null,
+      }, mask ? [mask.coverage.buffer] : []);
     } catch (error) {
       self.postMessage({ type: 'error', message: errorMessage(error), frameId });
     } finally {

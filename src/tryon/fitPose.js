@@ -1,18 +1,27 @@
 // Measurements refer to each centered Garment's local coordinates, after the
 // same normalization used by the showroom. Fit the torso, not a long garment's
 // complete bounds: a dress hem and suit trousers must extend below the hips.
+// needsHips: a top is fitted from the shoulders alone when the hips are out of
+// frame, so a T-shirt only asks for the upper body. A dress or a suit covers
+// the legs, so it stays hidden until the hips are visible.
 export const GARMENT_FIT = Object.freeze({
-  tshirt: { shoulderWidth: 0.34, torsoLength: 0.52, shoulderY: 0.245 },
-  hoodie: { shoulderWidth: 0.365, torsoLength: 0.50, shoulderY: 0.215 },
-  dress: { shoulderWidth: 0.27, torsoLength: 0.36, shoulderY: 0.35 },
-  suit: { shoulderWidth: 0.186, torsoLength: 0.275, shoulderY: 0.328 },
+  tshirt: { shoulderWidth: 0.34, torsoLength: 0.52, shoulderY: 0.245, needsHips: false },
+  hoodie: { shoulderWidth: 0.365, torsoLength: 0.50, shoulderY: 0.215, needsHips: false },
+  dress: { shoulderWidth: 0.27, torsoLength: 0.36, shoulderY: 0.35, needsHips: true },
+  suit: { shoulderWidth: 0.186, torsoLength: 0.275, shoulderY: 0.328, needsHips: true },
 });
+
+export function framingHint(garment = 'tshirt') {
+  return (GARMENT_FIT[garment] || GARMENT_FIT.tshirt).needsHips
+    ? 'Step back so your whole body, from shoulders to hips, is visible'
+    : 'Step back so your head and shoulders are visible';
+}
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const finiteOr = (value, fallback) => Number.isFinite(value) ? value : fallback;
 const hiddenFit = () => ({
   center: { x: 0, y: 0 }, scaleX: 0, scaleY: 0, rotation: 0,
-  visible: false, confidence: 0,
+  visible: false, hipsVisible: false, confidence: 0,
 });
 
 function validPoint(point) {
@@ -34,44 +43,62 @@ export function getPoseFit(landmarks, width, height, garment = 'tshirt', adjustm
   if (!Array.isArray(landmarks) || !Number.isFinite(width) || !Number.isFinite(height)
     || width <= 0 || height <= 0) return hiddenFit();
 
-  const points = [landmarks[11], landmarks[12], landmarks[23], landmarks[24]];
-  if (!points.every(validPoint)) return hiddenFit();
-  const [leftShoulder, rightShoulder, leftHip, rightHip] = points.map(point => ({
-    x: point.x * width, y: point.y * height,
-  }));
+  const profile = GARMENT_FIT[garment] || GARMENT_FIT.tshirt;
+  const shoulderPoints = [landmarks[11], landmarks[12]];
+  const hipPoints = [landmarks[23], landmarks[24]];
+  if (!shoulderPoints.every(validPoint)) return hiddenFit();
+  const hipsVisible = hipPoints.every(validPoint);
+  if (profile.needsHips && !hipsVisible) return hiddenFit();
+
+  const toPixels = point => ({ x: point.x * width, y: point.y * height });
+  const [leftShoulder, rightShoulder] = shoulderPoints.map(toPixels);
   const shoulders = {
     x: (leftShoulder.x + rightShoulder.x) / 2,
     y: (leftShoulder.y + rightShoulder.y) / 2,
   };
-  const hips = { x: (leftHip.x + rightHip.x) / 2, y: (leftHip.y + rightHip.y) / 2 };
-  const torsoX = hips.x - shoulders.x;
-  const torsoY = hips.y - shoulders.y;
-  const torsoLength = Math.hypot(torsoX, torsoY);
   const shoulderWidth = Math.hypot(leftShoulder.x - rightShoulder.x, leftShoulder.y - rightShoulder.y);
+  if (shoulderWidth < width * 0.06) return hiddenFit();
+  const [screenLeft, screenRight] = leftShoulder.x <= rightShoulder.x
+    ? [leftShoulder, rightShoulder] : [rightShoulder, leftShoulder];
+  const shoulderRotation = Math.atan2(-(screenRight.y - screenLeft.y), screenRight.x - screenLeft.x);
 
-  // Reject unreliable tiny, sideways, cropped or upside-down detections instead
-  // of leaving an enormous or drifting garment over an unrelated camera view.
-  if (torsoY < height * 0.10 || torsoLength < height * 0.12
-    || shoulderWidth < width * 0.06 || shoulderWidth / torsoLength < 0.40
-    || shoulderWidth / torsoLength > 1.8 || torsoLength > height * 0.82) return hiddenFit();
+  let torsoLength;
+  let rotation;
+  if (hipsVisible) {
+    const [leftHip, rightHip] = hipPoints.map(toPixels);
+    const hips = { x: (leftHip.x + rightHip.x) / 2, y: (leftHip.y + rightHip.y) / 2 };
+    const torsoX = hips.x - shoulders.x;
+    const torsoY = hips.y - shoulders.y;
+    torsoLength = Math.hypot(torsoX, torsoY);
 
-  const profile = GARMENT_FIT[garment] || GARMENT_FIT.tshirt;
+    // Reject unreliable tiny, sideways, cropped or upside-down detections instead
+    // of leaving an enormous or drifting garment over an unrelated camera view.
+    if (torsoY < height * 0.10 || torsoLength < height * 0.12
+      || shoulderWidth / torsoLength < 0.40
+      || shoulderWidth / torsoLength > 1.8 || torsoLength > height * 0.82) return hiddenFit();
+
+    const torsoRotation = Math.atan2(torsoX, torsoY);
+    rotation = clamp(torsoRotation * 0.6 + shoulderRotation * 0.4, -0.7, 0.7);
+  } else {
+    // Upper body only: the torso is estimated from the garment's own
+    // shoulder-to-hem proportions, so a top still fits from a close-up.
+    if (shoulderWidth > width * 0.85 || Math.abs(shoulderRotation) > 0.7) return hiddenFit();
+    torsoLength = shoulderWidth * profile.torsoLength / profile.shoulderWidth;
+    rotation = shoulderRotation;
+  }
+
   const size = clamp(finiteOr(adjustments.size, 1), 0.75, 1.3);
   const verticalOffset = clamp(finiteOr(adjustments.verticalOffset, 0), -0.25, 0.25);
   const scaleY = torsoLength / profile.torsoLength * size;
   const scaleX = clamp(shoulderWidth / profile.shoulderWidth * size, scaleY * 0.72, scaleY * 1.35);
-  const [screenLeft, screenRight] = leftShoulder.x <= rightShoulder.x
-    ? [leftShoulder, rightShoulder] : [rightShoulder, leftShoulder];
-  const shoulderRotation = Math.atan2(-(screenRight.y - screenLeft.y), screenRight.x - screenLeft.x);
-  const torsoRotation = Math.atan2(torsoX, torsoY);
-  const rotation = clamp(torsoRotation * 0.6 + shoulderRotation * 0.4, -0.7, 0.7);
   const downX = Math.sin(rotation);
   const downY = Math.cos(rotation);
   const centerDistance = profile.shoulderY * scaleY + verticalOffset * torsoLength;
 
   return {
     center: { x: shoulders.x + downX * centerDistance, y: shoulders.y + downY * centerDistance },
-    scaleX, scaleY, rotation, visible: true,
-    confidence: Math.min(...points.map(point => point.visibility)),
+    scaleX, scaleY, rotation, visible: true, hipsVisible,
+    confidence: Math.min(...(hipsVisible ? [...shoulderPoints, ...hipPoints] : shoulderPoints)
+      .map(point => point.visibility)),
   };
 }

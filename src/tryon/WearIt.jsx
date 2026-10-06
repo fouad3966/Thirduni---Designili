@@ -6,7 +6,9 @@ import state from '../store';
 import Garment from '../canvas/Garment';
 import GarmentSelector from '../comp/GarmentSelector';
 import { createPoseTracker } from './poseTracker';
-import { getPoseFit } from './fitPose';
+import { framingHint, getPoseFit } from './fitPose';
+import { measureRoomLight, paintOcclusion } from './occlusion';
+import { createFitSmoother } from './smoothFit';
 import './wearIt.css';
 
 const stopStream = stream => stream?.getTracks().forEach(track => track.stop());
@@ -25,41 +27,91 @@ class ModelBoundary extends Component {
   render() { return this.state.failed ? null : this.props.children; }
 }
 
+// Which way you are turned, from the pose model's metric landmarks: the
+// garment turns with you instead of staying flat against the camera.
+function bodyYaw(worldLandmarks) {
+  const left = worldLandmarks?.[11];
+  const right = worldLandmarks?.[12];
+  if (!left || !right || !Number.isFinite(left.z) || !Number.isFinite(right.z)) return 0;
+  const yaw = Math.atan2(left.z - right.z, left.x - right.x);
+  return Math.max(-0.8, Math.min(0.8, yaw));
+}
+
 function TrackedGarment({ pose, adjustments }) {
   const snap = useSnapshot(state);
   const group = useRef();
-  const previousVisible = useRef(false);
+  const smoother = useRef(null);
+  const lastSample = useRef(0);
   const { size } = useThree();
+  smoother.current ||= createFitSmoother();
 
-  useFrame((_, delta) => {
+  // A different garment is a different shape: start its tracking clean.
+  useEffect(() => { smoother.current.reset(); lastSample.current = 0; }, [snap.garment]);
+
+  useFrame(() => {
     if (!group.current) return;
     const sample = pose.current;
-    const fit = sample && performance.now() - sample.time < 500
-      ? getPoseFit(sample.landmarks, size.width, size.height, snap.garment, adjustments) : null;
-    if (!fit?.visible) {
+    const now = performance.now();
+    const fresh = sample && now - sample.time < 500;
+
+    if (fresh && sample.capturedAt !== lastSample.current) {
+      lastSample.current = sample.capturedAt;
+      const fit = getPoseFit(sample.landmarks, size.width, size.height, snap.garment, adjustments);
+      if (fit.visible) {
+        smoother.current.push({
+          x: fit.center.x - size.width / 2,
+          y: size.height / 2 - fit.center.y,
+          scaleX: fit.scaleX, scaleY: fit.scaleY,
+          rotation: fit.rotation, yaw: bodyYaw(sample.worldLandmarks),
+        }, sample.capturedAt / 1000);
+      } else {
+        smoother.current.reset();
+      }
+    }
+
+    // Drawn where the body is now, not where the last finished frame saw it.
+    const fit = fresh ? smoother.current.predict(now / 1000) : null;
+    if (!fit) {
       group.current.visible = false;
-      previousVisible.current = false;
       return;
     }
-    const amount = previousVisible.current ? 1 - Math.exp(-14 * delta) : 1;
-    group.current.position.x += (fit.center.x - size.width / 2 - group.current.position.x) * amount;
-    group.current.position.y += (size.height / 2 - fit.center.y - group.current.position.y) * amount;
-    const zScale = Math.sqrt(fit.scaleX * fit.scaleY);
-    group.current.scale.x += (fit.scaleX - group.current.scale.x) * amount;
-    group.current.scale.y += (fit.scaleY - group.current.scale.y) * amount;
-    group.current.scale.z += (zScale - group.current.scale.z) * amount;
-    group.current.rotation.z += (fit.rotation - group.current.rotation.z) * amount;
+    group.current.position.set(fit.x, fit.y, 0);
+    group.current.scale.set(fit.scaleX, fit.scaleY, Math.sqrt(fit.scaleX * fit.scaleY));
+    group.current.rotation.set(0, fit.yaw, fit.rotation);
     group.current.visible = true;
-    previousVisible.current = true;
   });
 
   return <group ref={group} visible={false}><Center key={snap.garment}><Garment /></Center></group>;
 }
 
+// The lights follow the brightness of the room, so the garment does not glow
+// in a dim room or look grey in a bright one.
+function RoomLights({ light }) {
+  const ambient = useRef();
+  const key = useRef();
+
+  useFrame((_, delta) => {
+    const level = light.current ?? 0.5;
+    const amount = 1 - Math.exp(-3 * delta);
+    if (ambient.current) ambient.current.intensity += (0.55 + level * 1.3 - ambient.current.intensity) * amount;
+    if (key.current) key.current.intensity += (0.7 + level * 1.7 - key.current.intensity) * amount;
+  });
+
+  return <>
+    <ambientLight ref={ambient} intensity={1.3} />
+    <directionalLight ref={key} position={[-3, 5, 8]} intensity={1.8} />
+    <directionalLight position={[4, 2, 4]} intensity={0.6} />
+  </>;
+}
+
 export default function WearIt({ onClose }) {
   const dialog = useRef();
   const video = useRef();
+  const occlusion = useRef();
   const pose = useRef(null);
+  const roomLight = useRef(0.5);
+  const probe = useRef(null);
+  probe.current ||= typeof document === 'undefined' ? null : Object.assign(document.createElement('canvas'), { width: 16, height: 16 });
   const sessionFailure = useRef(() => {});
   const [status, setStatus] = useState('Starting camera…');
   const [error, setError] = useState('');
@@ -126,22 +178,25 @@ export default function WearIt({ onClose }) {
       setStatus('Loading body tracking…');
       tracker = await createPoseTracker({
         signal: controller.signal,
-        onPose: landmarks => {
+        onPose: (landmarks, extras) => {
           if (!alive) return;
-          pose.current = { landmarks, time: performance.now() };
+          pose.current = { landmarks, worldLandmarks: extras?.worldLandmarks ?? null, mask: extras?.mask ?? null, capturedAt: extras?.capturedAt ?? performance.now(), time: performance.now() };
           const visible = getPoseFit(landmarks, element.videoWidth, element.videoHeight, state.garment, { size: 1, verticalOffset: 0 }).visible;
-          const next = visible ? 'Following your movement' : 'Step back so your shoulders and hips are visible';
+          const next = visible ? 'Following your movement' : framingHint(state.garment);
           if (next !== lastStatus) { lastStatus = next; setStatus(next); }
+          roomLight.current = measureRoomLight(probe.current, element, landmarks) ?? roomLight.current;
         },
         onError: fail,
       });
       if (!alive || controller.signal.aborted) { tracker.close(); return; }
       if (track.readyState === 'ended') throw new Error('The camera disconnected. Connect it and try again.');
       setReady(true);
-      setStatus('Step back so your shoulders and hips are visible');
+      setStatus(framingHint(state.garment));
       const tick = () => {
         if (!alive || controller.signal.aborted) return;
         tracker.detect(element);
+        const sample = pose.current;
+        paintOcclusion(occlusion.current, element, sample && performance.now() - sample.time < 500 ? sample : null);
         animation = requestAnimationFrame(tick);
       };
       animation = requestAnimationFrame(tick);
@@ -166,11 +221,11 @@ export default function WearIt({ onClose }) {
       <div className={`wear-stage${mirrored ? ' wear-mirrored' : ''}`} style={{ aspectRatio: ratio, width: `min(100%, calc(54dvh * ${ratio}))` }}>
         <video ref={video} autoPlay muted playsInline aria-label="Your live camera" />
         {ready && <div className="wear-overlay"><Canvas orthographic camera={{ position: [0, 0, 1000], near: 0.1, far: 3000, zoom: 1 }} dpr={[1, 1.5]} gl={{ alpha: true, antialias: true }}>
-          <ambientLight intensity={1.3} />
-          <directionalLight position={[-3, 5, 8]} intensity={1.8} />
-          <directionalLight position={[4, 2, 4]} intensity={0.6} />
+          <RoomLights light={roomLight} />
           <ModelBoundary key={snap.garment} onError={message => sessionFailure.current(new Error(message))}><Suspense fallback={null}><TrackedGarment pose={pose} adjustments={{ size, verticalOffset }} /></Suspense></ModelBoundary>
         </Canvas></div>}
+        {/* Your body and the room, painted back over the garment. */}
+        <canvas ref={occlusion} className="wear-occlusion" aria-hidden="true" />
       </div>
       {(error || paused) && <div className="wear-message" role={error ? 'alert' : 'status'}>
         <p>{paused ? 'Camera paused while you were away.' : error}</p>

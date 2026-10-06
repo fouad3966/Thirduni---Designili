@@ -1,4 +1,6 @@
-const FRAME_INTERVAL = 1000 / 15;
+// Detect as often as the camera delivers: every skipped frame is lag the
+// garment cannot be smoothed out of.
+const FRAME_INTERVAL = 1000 / 30;
 const INITIALIZATION_TIMEOUT = 45_000;
 const FRAME_TIMEOUT = 10_000;
 
@@ -23,6 +25,7 @@ export function createPoseTracker({ onPose, onError, signal } = {}) {
     let inFlight = false;
     let lastFrameAt = -Infinity;
     let lastVideoTime = -Infinity;
+    let capturedAt;
     let frameId = 0;
     let initializationTimer;
     let frameTimer;
@@ -58,6 +61,7 @@ export function createPoseTracker({ onPose, onError, signal } = {}) {
       lastFrameAt = timestamp;
       lastVideoTime = video.currentTime;
       inFlight = true;
+      capturedAt = timestamp;
       let bitmap;
       try {
         const resize = Math.min(1, 640 / Math.max(video.videoWidth, video.videoHeight));
@@ -90,7 +94,13 @@ export function createPoseTracker({ onPose, onError, signal } = {}) {
         } else if (data.type === 'pose' && data.frameId === frameId) {
           clearTimeout(frameTimer);
           inFlight = false;
-          onPose?.(data.landmarks);
+          onPose?.(data.landmarks, {
+            worldLandmarks: data.worldLandmarks ?? null,
+            mask: data.mask ?? null,
+            // When this frame left the camera, so the fit can be carried
+            // forward by however long the detection actually took.
+            capturedAt: capturedAt ?? performance.now(),
+          });
         } else if (data.type === 'error') {
           fail(new Error(data.message || 'Local pose tracking failed.'));
         }

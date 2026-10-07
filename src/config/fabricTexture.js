@@ -32,7 +32,8 @@ export function createFabricMaterial(source) {
   material.color.set('#ffffff');
   material.roughness = 0.94;
   material.metalness = 0;
-  material.aoMapIntensity = 0.85;
+  material.aoMap = null;
+  material.aoMapIntensity = 0;
   material.normalScale.set(0.48, 0.48);
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);

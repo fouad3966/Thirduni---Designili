@@ -63,7 +63,32 @@ html {
 }
 
 .filepicker-container {
-  @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] flex flex-col rounded-md;
+  @apply absolute left-full ml-3 glassmorphism p-3.5 w-[255px] flex flex-col rounded-xl text-gray-800;
+  max-height: calc(100dvh - 80px);
+  overflow-y: auto;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.textpicker-container {
+  @apply absolute left-full ml-3 glassmorphism p-3 w-[255px] flex flex-col rounded-xl text-gray-800;
+  max-height: calc(100dvh - 80px);
+  overflow-y: auto;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.4);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.7);
 }
 
 .filepicker-label {

@@ -10,9 +10,12 @@ import { fadeAnimation, slideAnimation } from '../config/motion'
 import AIPicker from '../comp/AIPicker'
 import ColorPicker from '../comp/ColorPicker'
 import FilePiker from '../comp/FilePiker'
+import TextPicker from '../comp/TextPicker'
+import ViewControls from '../comp/ViewControls'
 import Tab from '../comp/Tab'
 import GarmentSelector from '../comp/GarmentSelector'
 import { getFabricDirection, getFabricTrimColor } from '../config/fullDesign'
+import { toggleFlip } from '../store'
 
 const Costumizer = () => {
   const snap = useSnapshot(state);
@@ -98,6 +101,13 @@ const Costumizer = () => {
   const handleActiveFilterTab = tabName => {
     if (tabName === 'logoShirt') state.isLogoTexture = !state.isLogoTexture;
     if (tabName === 'stylishShirt') state.isFullTexture = !state.isFullTexture;
+    if (tabName === 'textShirt') state.isTextTexture = !state.isTextTexture;
+  };
+
+  const handleEditorTabClick = tabName => {
+    const next = activeEditorTab === tabName ? '' : tabName;
+    setActiveEditorTab(next);
+    state.activeEditorTab = next;
   };
 
   const readFile = type => {
@@ -111,7 +121,10 @@ const Costumizer = () => {
         state.useTrim = false;
       }
       handleDecals(type, result);
-      setActiveEditorTab('');
+      if (type === 'full') {
+        setActiveEditorTab('');
+        state.activeEditorTab = '';
+      }
     }).catch(() => setGenerationError('The selected image could not be read.'));
   };
 
@@ -120,6 +133,7 @@ const Costumizer = () => {
       case 'colorpicker': return <ColorPicker />;
       case 'filepicker': return <FilePiker file={file} setFile={setFile} readFile={readFile} supportsLogo={snap.garment === 'tshirt'} />;
       case 'aipicker': return <AIPicker prompt={prompt} setPrompt={setPrompt} generatingImg={generatingImg} generationError={generationError} handleSubmit={handleSubmit} />;
+      case 'textpicker': return <TextPicker />;
       default: return null;
     }
   };
@@ -129,22 +143,48 @@ const Costumizer = () => {
       {!snap.intro && (
         <>
           <div className='garment-selector-editor'><GarmentSelector /></div>
+          <ViewControls />
           <motion.div key='custom' className='absolute top-0 left-0 z-10' {...slideAnimation('left')}>
             <div className='flex items-center min-h-screen'>
               <div className='editortabs-container tabs'>
-                {EditorTabs.map(tab => <Tab key={tab.name} tab={tab} handleClick={() => setActiveEditorTab(tab.name)} />)}
+                {EditorTabs.map(tab => (
+                  <Tab
+                    key={tab.name}
+                    tab={tab}
+                    isActiveTab={activeEditorTab === tab.name}
+                    handleClick={() => handleEditorTabClick(tab.name)}
+                  />
+                ))}
                 {generateTabContent()}
               </div>
             </div>
           </motion.div>
           <motion.div className='absolute z-10 top-5 right-5 flex gap-2' {...fadeAnimation}>
+            <CustomButtom
+              type='filled'
+              title={snap.isFlipped ? '🔄 Front View' : '🔄 Flip to Back'}
+              handleClick={toggleFlip}
+              customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap'
+            />
             <CustomButtom type='filled' title='Wear it' handleClick={() => state.wearItOpen = true} disabled={generatingImg} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
             <CustomButtom type='filled' title='Go Back' handleClick={() => state.intro = true} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
           </motion.div>
           <motion.div className='filtertabs-container' {...slideAnimation('up')}>
-            {FilterTabs.filter(tab => snap.garment === 'tshirt' || tab.name !== 'logoShirt').map(tab => <Tab key={tab.name} tab={tab} isFilterTab
-              isActiveTab={tab.name === 'logoShirt' ? snap.isLogoTexture : snap.isFullTexture}
-              handleClick={() => handleActiveFilterTab(tab.name)} />)}
+            {FilterTabs.filter(tab => snap.garment === 'tshirt' || (tab.name !== 'logoShirt' && tab.name !== 'textShirt')).map(tab => (
+              <Tab
+                key={tab.name}
+                tab={tab}
+                isFilterTab
+                isActiveTab={
+                  tab.name === 'logoShirt'
+                    ? snap.isLogoTexture
+                    : tab.name === 'stylishShirt'
+                    ? snap.isFullTexture
+                    : snap.isTextTexture
+                }
+                handleClick={() => handleActiveFilterTab(tab.name)}
+              />
+            ))}
           </motion.div>
         </>
       )}

@@ -13,6 +13,10 @@ export const EditorTabs = [
     name: "aipicker",
     icon: "./ai.png",
   },
+  {
+    name: "textpicker",
+    icon: "./text.png",
+  },
 ];
 
 export const FilterTabs = [
@@ -23,6 +27,10 @@ export const FilterTabs = [
   {
     name: "stylishShirt",
     icon: "./stylish-tshirt.png",
+  },
+  {
+    name: "textShirt",
+    icon: "./text.png",
   },
 ];
 

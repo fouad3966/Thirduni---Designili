@@ -9,6 +9,8 @@ const Tab = ({ tab, isFilterTab, isActiveTab, handleClick }) => {
 
   const activeStyles = isFilterTab && isActiveTab
     ? { backgroundColor: snap.color, opacity: 0.5 }
+    : !isFilterTab && isActiveTab
+    ? { backgroundColor: "rgba(255, 255, 255, 0.45)", borderRadius: '10px', boxShadow: '0 0 12px rgba(255, 255, 255, 0.4)' }
     : { backgroundColor: "transparent", opacity: 1 }
 
   return (

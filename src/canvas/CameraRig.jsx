@@ -18,7 +18,11 @@ const CameraRig = ({ children }) => {
       targetPosition = isMobile ? [0, 0, 2.5] : [0, 0, 2]
     }
     easing.damp3(scene.camera.position, targetPosition, 0.25, delta)
-    easing.dampE(group.current.rotation, [scene.pointer.y / 10, -scene.pointer.x / 5, 0], 0.25, delta)
+    if (snap.isDraggingText || snap.isDraggingLogo) {
+      easing.dampE(group.current.rotation, [0, 0, 0], 0.1, delta)
+    } else {
+      easing.dampE(group.current.rotation, [scene.pointer.y / 10, -scene.pointer.x / 5, 0], 0.25, delta)
+    }
   })
   return <group ref={group}>{children}</group>
 }

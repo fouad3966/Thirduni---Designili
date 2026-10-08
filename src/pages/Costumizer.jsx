@@ -11,11 +11,12 @@ import AIPicker from '../comp/AIPicker'
 import ColorPicker from '../comp/ColorPicker'
 import FilePiker from '../comp/FilePiker'
 import TextPicker from '../comp/TextPicker'
-import ViewControls from '../comp/ViewControls'
+import DesignHistoryDropdown from '../comp/DesignHistoryDropdown'
 import Tab from '../comp/Tab'
 import GarmentSelector from '../comp/GarmentSelector'
 import { getFabricDirection, getFabricTrimColor } from '../config/fullDesign'
 import { toggleFlip } from '../store'
+import { addDesignToHistory } from '../config/designHistory'
 
 const Costumizer = () => {
   const snap = useSnapshot(state);
@@ -72,6 +73,7 @@ const Costumizer = () => {
       state.trimColor = getFabricTrimColor(generatedImage);
       state.useTrim = true;
       handleDecals('full', imageUrl);
+      addDesignToHistory({ title: trimmedPrompt, fullDecal: imageUrl, trimColor: state.trimColor });
       setActiveEditorTab('');
     } catch (error) {
       setGenerationError(controller.signal.aborted
@@ -143,7 +145,6 @@ const Costumizer = () => {
       {!snap.intro && (
         <>
           <div className='garment-selector-editor'><GarmentSelector /></div>
-          <ViewControls />
           <motion.div key='custom' className='absolute top-0 left-0 z-10' {...slideAnimation('left')}>
             <div className='flex items-center min-h-screen'>
               <div className='editortabs-container tabs'>
@@ -159,15 +160,18 @@ const Costumizer = () => {
               </div>
             </div>
           </motion.div>
-          <motion.div className='absolute z-10 top-5 right-5 flex gap-2' {...fadeAnimation}>
-            <CustomButtom
-              type='filled'
-              title={snap.isFlipped ? '🔄 Front View' : '🔄 Flip to Back'}
-              handleClick={toggleFlip}
-              customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap'
-            />
-            <CustomButtom type='filled' title='Wear it' handleClick={() => state.wearItOpen = true} disabled={generatingImg} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
-            <CustomButtom type='filled' title='Go Back' handleClick={() => state.intro = true} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
+          <motion.div className='absolute z-10 top-5 right-5 flex flex-col items-end gap-2' {...fadeAnimation}>
+            <div className='flex gap-2'>
+              <CustomButtom
+                type='filled'
+                title={snap.isFlipped ? '🔄 Front View' : '🔄 Flip to Back'}
+                handleClick={toggleFlip}
+                customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap'
+              />
+              <CustomButtom type='filled' title='Wear it' handleClick={() => state.wearItOpen = true} disabled={generatingImg} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
+              <CustomButtom type='filled' title='Go Back' handleClick={() => state.intro = true} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
+            </div>
+            <DesignHistoryDropdown />
           </motion.div>
           <motion.div className='filtertabs-container' {...slideAnimation('up')}>
             {FilterTabs.filter(tab => snap.garment === 'tshirt' || (tab.name !== 'logoShirt' && tab.name !== 'textShirt')).map(tab => (

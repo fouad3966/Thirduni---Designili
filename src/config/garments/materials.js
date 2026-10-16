@@ -1,18 +1,22 @@
 import { DoubleSide } from 'three';
 
 // Preserve authored UVs and cloth normals. Only neutralize diffuse atlases
-// suitable for detail: the hoodie's nearly black print exaggerates artifacts
-// when used as shading on a light fabric color.
-const detailLevels = { dress: 0.3, suit: 0.018 };
+// suitable for detail.
+const detailLevels = { dress: 0.3 };
+// The shoe keeps its own black-and-white design and is tinted by the colour,
+// instead of being painted one flat colour over sole, laces and upper.
+const KEEPS_PRINT = new Set(['shoes']);
 
 export function createTailoredMaterial(source, garment) {
   const material = source.clone();
-  const detailMap = garment === 'hoodie' ? null : source.map;
+  const keepsPrint = KEEPS_PRINT.has(garment);
+  material.userData.printMap = keepsPrint ? source.map : null;
+  const detailMap = garment === 'hoodie' || keepsPrint ? null : source.map;
   material.color.set('#ffffff');
   material.metalness = 0;
-  material.roughness = garment === 'dress' ? 0.78 : 0.93;
+  material.roughness = garment === 'dress' ? 0.78 : keepsPrint ? 0.7 : 0.93;
   material.side = DoubleSide;
-  material.normalScale.setScalar(garment === 'hoodie' ? 0.15 : 0.5);
+  material.normalScale.setScalar(0.5);
 
   if (detailMap) {
     material.onBeforeCompile = shader => {
@@ -40,7 +44,7 @@ export function createTailoredMaterial(source, garment) {
 }
 
 export function updateTailoredMaterial(material, texture, design) {
-  const nextMap = design.isFullTexture ? texture : null;
+  const nextMap = design.isFullTexture ? texture : material.userData.printMap ?? null;
   if (material.map !== nextMap) {
     material.map = nextMap;
     material.needsUpdate = true;

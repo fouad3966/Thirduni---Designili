@@ -1,18 +1,23 @@
-# Camisole Dress with Full Skirt
+# Long-sleeve dress
 
-Authored by **Margaret Toigo**, released under **CC0** through MakeHuman Community. The source dress was created with Blender cloth simulation and includes natural folds in the bodice and skirt. It contains no body or avatar.
+`model.glb` is a long-sleeve fit-and-flare dress with a scoop front neckline
+and criss-cross straps at the back. It was supplied by the site owner as
+`aas.glb`, an AI-generated model (Blender glTF export, 66 MB, 1.5 million
+triangles, PBR textures).
 
-- [Original asset](http://www.makehumancommunity.org/node/1730)
-- [Official collection and license listing](https://static.makehumancommunity.org/assets/assetpacks/dress01.html)
-- [Source archive](https://files.makehumancommunity.org/asset_packs/dress01/dress01_cc0.zip)
-- [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/)
+Adaptations, made by `convert_aas.py` (see its header for the exact commands):
 
-`model.glb` contains one editable `fabric_dress_0` mesh. The conversion applies the creator's recommended two levels of subdivision, computes smooth normals across UV seams, and preserves the authored UVs. The dress faces +Z with +Y up. The original decorative flower print is omitted so recoloring and AI designs use a neutral surface; the existing project's shirt weave normal map provides fine cloth detail. The dress does not reuse the shirt's AO atlas.
+- Simplified from 1.5 million to about 105,000 triangles (glTF-Transform weld
+  and simplify), 6 MB in total.
+- The upright rotation baked into the vertices: Y up, front facing +Z.
+- Mesh named `fabric_dress` so the viewer recolours it.
+- The generated print (near-black with pink and purple speckles) and its
+  roughness/metal maps are removed, so colours and AI designs show cleanly.
+  The normal map is kept at 2048 px for the folds and fabric detail.
+- A second set of texture coordinates (`TEXCOORD_1`) wrapped around the body
+  for AI designs; the generator's own atlas would scramble a print.
 
-To reproduce, download and extract the official archive, then run with Python, NumPy, and Pillow:
-
-```sh
-python3 public/garments/dress/convert_dress.py --source-dir /path/to/clothes/toigo_camisole_dress_with_full_skirt
-```
-
-`source.json` preserves the official archive's creator and license metadata.
+The previous dress (Camisole Dress with Full Skirt by Margaret Toigo, CC0) is
+kept in `previous/` with its conversion script and licence metadata. To switch
+back, copy `previous/model.glb` over `model.glb` and restore the `dress` entry
+in `src/tryon/fitPose.js` to `{ shoulderWidth: 0.27, torsoLength: 0.36, shoulderY: 0.35 }`.

@@ -1,18 +1,21 @@
 // Measurements refer to each centered Garment's local coordinates, after the
 // same normalization used by the showroom. Fit the torso, not a long garment's
-// complete bounds: a dress hem and suit trousers must extend below the hips.
+// complete bounds: a dress hem must extend below the hips.
 // needsHips: a top is fitted from the shoulders alone when the hips are out of
-// frame, so a T-shirt only asks for the upper body. A dress or a suit covers
-// the legs, so it stays hidden until the hips are visible.
+// frame, so a T-shirt only asks for the upper body. A dress covers the legs,
+// so it stays hidden until the hips are visible. Garments without an entry
+// (shoes, the hat) are not worn on the torso and are never shown in the camera.
 export const GARMENT_FIT = Object.freeze({
   tshirt: { shoulderWidth: 0.34, torsoLength: 0.52, shoulderY: 0.245, needsHips: false },
-  hoodie: { shoulderWidth: 0.365, torsoLength: 0.50, shoulderY: 0.215, needsHips: false },
-  dress: { shoulderWidth: 0.27, torsoLength: 0.36, shoulderY: 0.35, needsHips: true },
-  suit: { shoulderWidth: 0.186, torsoLength: 0.275, shoulderY: 0.328, needsHips: true },
+  hoodie: { shoulderWidth: 0.353, torsoLength: 0.516, shoulderY: 0.208, needsHips: false },
+  dress: { shoulderWidth: 0.291, torsoLength: 0.354, shoulderY: 0.375, needsHips: true },
 });
 
+export const canWear = (garment) => Object.hasOwn(GARMENT_FIT, garment);
+
 export function framingHint(garment = 'tshirt') {
-  return (GARMENT_FIT[garment] || GARMENT_FIT.tshirt).needsHips
+  if (!canWear(garment)) return 'Shoes and hats can\u2019t be tried on with the camera yet. Pick a top or the dress above.';
+  return GARMENT_FIT[garment].needsHips
     ? 'Step back so your whole body, from shoulders to hips, is visible'
     : 'Step back so your head and shoulders are visible';
 }
@@ -43,7 +46,8 @@ export function getPoseFit(landmarks, width, height, garment = 'tshirt', adjustm
   if (!Array.isArray(landmarks) || !Number.isFinite(width) || !Number.isFinite(height)
     || width <= 0 || height <= 0) return hiddenFit();
 
-  const profile = GARMENT_FIT[garment] || GARMENT_FIT.tshirt;
+  if (!canWear(garment)) return hiddenFit();
+  const profile = GARMENT_FIT[garment];
   const shoulderPoints = [landmarks[11], landmarks[12]];
   const hipPoints = [landmarks[23], landmarks[24]];
   if (!shoulderPoints.every(validPoint)) return hiddenFit();

@@ -5,32 +5,20 @@ import numpy as np
 from PIL import Image
 
 import argparse
-parser = argparse.ArgumentParser(description='Convert the CC0 MakeHuman Men’s Suit 3 OBJ and textures to glTF.')
-parser.add_argument('--source-dir', required=True, type=Path, help='Directory containing suit3.obj and NewSuit3 texture PNGs')
+parser = argparse.ArgumentParser(description='Convert the CC0 MakeHuman camisole dress OBJ to glTF.')
+parser.add_argument('--source-dir', required=True, type=Path, help='Directory containing dress_camisole_full_skirt.obj')
 parser.add_argument('--output-dir', default=Path(__file__).resolve().parent, type=Path)
 args = parser.parse_args()
 ROOT, DEST = args.source_dir, args.output_dir
 DEST.mkdir(parents=True, exist_ok=True)
 vertices, texcoords, faces = [], [], []
-for line in (ROOT / 'suit3.obj').read_text().splitlines():
+for line in (ROOT / 'dress_camisole_full_skirt.obj').read_text().splitlines():
     data = line.split()
     if not data: continue
     if data[0] == 'v': vertices.append([float(n) * 0.1 for n in data[1:4]])
     if data[0] == 'vt': texcoords.append([float(n) for n in data[1:3]])
     if data[0] == 'f': faces.append([(int(n.split('/')[0])-1, int(n.split('/')[1])-1) for n in data[1:]])
 vertices, texcoords = np.asarray(vertices), np.asarray(texcoords)
-# Relax the authored A-pose into a garment display pose. This is a continuous
-# shoulder-weighted rotation, applied equally to the jacket, cuffs and buttons.
-for point in vertices:
-    if point[1] < .20: continue
-    sign = 1 if point[0] > 0 else -1
-    blend = np.clip((abs(point[0]) - .205) / .10, 0, 1)
-    blend = blend * blend * (3 - 2 * blend)
-    angle = -sign * np.deg2rad(16) * blend
-    pivot = np.asarray([sign * .185, .645, .045])
-    x, y = point[:2] - pivot[:2]
-    point[0] = pivot[0] + np.cos(angle) * x - np.sin(angle) * y
-    point[1] = pivot[1] + np.sin(angle) * x + np.cos(angle) * y
 parent = list(range(len(vertices)))
 def find(i):
     while parent[i] != i:
@@ -85,7 +73,7 @@ def subdivide(points, quads, uv):
     return np.asarray(result_points), np.asarray(result_faces), np.asarray(result_uvs)
 
 gltf = {'asset': {'version':'2.0','generator':'CC0 MakeHuman garment conversion; Catmull-Clark subdivision',
-    'copyright':'Men’s Suit 3 — Margaret Toigo, CC0 1.0'},
+    'copyright':'Camisole Dress with Full Skirt — Margaret Toigo, CC0 1.0'},
     'scene':0,'scenes':[{'nodes':[]}], 'nodes':[], 'meshes':[], 'materials':[],
     'buffers':[{'byteLength':0}], 'bufferViews':[], 'accessors':[], 'images':[],
     'textures':[], 'samplers':[{'magFilter':9729,'minFilter':9987,'wrapS':10497,'wrapT':10497}]}
@@ -108,22 +96,32 @@ def accessor(array, kind, component=5126, bounds=False):
     gltf['accessors'].append(entry)
     return len(gltf['accessors'])-1
 
-# OBJ texture coordinates are retained exactly. Reflecting only the pixel rows
-# adapts bottom-origin OBJ textures to glTF without changing tangent handedness.
-for filename in ['NewSuit3.png', 'NewSuit3-norm.png']:
-    image = Image.open(ROOT / filename).transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-    encoded = io.BytesIO(); image.save(encoded,format='PNG', optimize=True)
-    gltf['images'].append({'bufferView':buffer_view(encoded.getvalue()),'mimeType':'image/png','name':filename})
-    gltf['textures'].append({'sampler':0,'source':len(gltf['images'])-1})
+# Reuse the project's original shirt weave at a fine tile scale. This adds
+# textile detail without borrowing the shirt's garment-specific AO atlas.
+shirt_path = Path(__file__).resolve().parents[3] / 'shirt_baked.glb'  # moved into previous/
+shirt_bytes = shirt_path.read_bytes()
+json_length = struct.unpack_from('<I', shirt_bytes, 12)[0]
+shirt_gltf = json.loads(shirt_bytes[20:20 + json_length])
+shirt_binary_start = 20 + json_length + 8
+normal_texture = shirt_gltf['materials'][0]['normalTexture']['index']
+normal_image = shirt_gltf['textures'][normal_texture]['source']
+normal_image_meta = shirt_gltf['images'][normal_image]
+normal_view = shirt_gltf['bufferViews'][normal_image_meta['bufferView']]
+normal_start = shirt_binary_start + normal_view.get('byteOffset', 0)
+normal_bytes = shirt_bytes[normal_start:normal_start + normal_view['byteLength']]
+gltf['images'].append({'bufferView':buffer_view(normal_bytes),
+    'mimeType':normal_image_meta['mimeType'],'name':'original-shirt-weave'})
+gltf['textures'].append({'sampler':0,'source':0})
+gltf['extensionsUsed'] = ['KHR_texture_transform']
 
-roles = [('fabric_jacket','fabric'),('fabric_trousers','fabric'),('shirt','shirt'),('tie','dark'),
-    ('cuff_right','shirt'),('cuff_left','shirt')]+[(f'button_{i+1}','dark') for i in range(9)]
-for name, role in [('fabric','fabric'),('shirt','shirt'),('tie','dark'),('buttons','dark')]:
-    gltf['materials'].append({'name':name,'doubleSided':True,
-        'pbrMetallicRoughness':{'baseColorTexture':{'index':0},'baseColorFactor':[1,1,1,1],
-            'metallicFactor':0,'roughnessFactor':.91 if name == 'fabric' else .82 if name == 'shirt' else .57},
-        'normalTexture':{'index':1,'scale':.8 if name == 'fabric' else .55},
-        'extras':{'role':role,'nativeTexture':True}})
+# The source print is decorative, not ambient occlusion: keep its UVs but
+# leave the dress material neutral so recoloring never bakes that print in.
+gltf['materials'].append({'name':'fabric','doubleSided':True,
+    'pbrMetallicRoughness':{'baseColorFactor':[1,1,1,1],
+        'metallicFactor':0,'roughnessFactor':.84},
+    'normalTexture':{'index':0,'scale':.4,
+        'extensions':{'KHR_texture_transform':{'scale':[8,8]}}},
+    'extras':{'role':'fabric'}})
 
 triangle_count = vertex_count = 0
 for component_index, source_faces in enumerate(components):
@@ -149,8 +147,8 @@ for component_index, source_faces in enumerate(components):
             face_indices.append(cache[key])
         a,b,c,d = face_indices
         indices.extend([a,b,c,a,c,d])
-    name,role = roles[component_index]
-    material = 0 if role == 'fabric' else 1 if role == 'shirt' else 2 if name == 'tie' else 3
+    name,role = f'fabric_dress_{component_index}', 'fabric'
+    material = 0
     primitive = {'attributes':{'POSITION':accessor(packed,'VEC3',bounds=True),
         'NORMAL':accessor(packed_normals,'VEC3'),'TEXCOORD_0':accessor(packed_uv,'VEC2')},
         'indices':accessor(indices,'SCALAR',5125),'material':material}

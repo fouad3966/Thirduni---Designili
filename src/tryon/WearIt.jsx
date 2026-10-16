@@ -216,7 +216,7 @@ export default function WearIt({ onClose }) {
       <div><h2 id="wear-title">Wear it</h2><p>Live 3D preview · Free</p></div>
       <button type="button" className="wear-close" onClick={onClose} aria-label="Close camera preview">×</button>
     </header>
-    <div className="wear-options"><GarmentSelector /></div>
+    <div className="wear-options"><GarmentSelector exclude={['shoes', 'hat']} /></div>
     <div className="wear-stage-shell">
       <div className={`wear-stage${mirrored ? ' wear-mirrored' : ''}`} style={{ aspectRatio: ratio, width: `min(100%, calc(54dvh * ${ratio}))` }}>
         <video ref={video} autoPlay muted playsInline aria-label="Your live camera" />

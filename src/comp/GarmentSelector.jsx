@@ -3,10 +3,10 @@ import state, { selectGarment } from '../store';
 import { GARMENTS } from '../config/garments/catalog';
 import { getContrastingColor } from '../config/helpers';
 
-export default function GarmentSelector() {
+export default function GarmentSelector({ exclude = [] }) {
   const snap = useSnapshot(state);
   return <div className="garment-selector" role="group" aria-label="Choose your garment">
-    {GARMENTS.map(garment => <button type="button" key={garment.id}
+    {GARMENTS.filter(garment => !exclude.includes(garment.id)).map(garment => <button type="button" key={garment.id}
       aria-pressed={snap.garment === garment.id}
       disabled={Boolean(snap.generatingGarment)}
       onClick={() => selectGarment(garment.id)}

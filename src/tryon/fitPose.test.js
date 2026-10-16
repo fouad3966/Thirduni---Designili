@@ -1,7 +1,7 @@
 /* eslint-env node */
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { GARMENT_FIT, getPoseFit } from './fitPose.js';
+import { canWear, framingHint, GARMENT_FIT, getPoseFit } from './fitPose.js';
 
 function pose() {
   const landmarks = Array.from({ length: 33 }, () => ({ x: 0.5, y: 0.5, visibility: 1 }));
@@ -65,7 +65,6 @@ test('a top fits from the shoulders alone, while a dress waits for the hips', ()
   assert.equal(shirt.visible, true);
   assert.equal(shirt.hipsVisible, false);
   assert.equal(getPoseFit(landmarks, 640, 480, 'dress').visible, false);
-  assert.equal(getPoseFit(landmarks, 640, 480, 'suit').visible, false);
   assert.equal(getPoseFit(landmarks, 640, 480, 'hoodie').visible, true);
 
   // The estimated torso follows the model's own proportions, so the garment
@@ -97,11 +96,18 @@ test('shoulders-only fitting still rejects a camera that is too close or sideway
 
 test('long garments use torso anchors instead of shrinking the complete outfit into the torso', () => {
   const shirt = getPoseFit(pose(), 640, 480, 'tshirt');
-  const suit = getPoseFit(pose(), 640, 480, 'suit');
   const dress = getPoseFit(pose(), 640, 480, 'dress');
-  assert.ok(suit.scaleY * 0.75 > shirt.scaleY * 0.613 * 1.5);
   assert.ok(dress.scaleY * 0.75 > shirt.scaleY * 0.613 * 1.5);
-  assert.ok(suit.center.y > shirt.center.y);
+  assert.ok(dress.center.y > shirt.center.y);
+});
+
+test('shoes and the hat are never fitted to the body, and say so', () => {
+  assert.equal(getPoseFit(pose(), 640, 480, 'shoes').visible, false);
+  assert.equal(getPoseFit(pose(), 640, 480, 'hat').visible, false);
+  assert.equal(canWear('shoes'), false);
+  assert.equal(canWear('hat'), false);
+  assert.match(framingHint('shoes'), /can.t be tried on/);
+  assert.equal(canWear('dress'), true);
 });
 
 test('manual fit controls are bounded and vertical movement uses torso proportions', () => {

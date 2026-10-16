@@ -17,7 +17,7 @@ function TailoredGarment() {
     () => createFabricTexture(sourceTexture, renderer.capabilities.getMaxAnisotropy()),
     [sourceTexture, renderer]
   );
-  const { model, clothMaterials, ownedMaterials, fit } = useMemo(() => {
+  const { model, clothMaterials, ownedMaterials, patternChannel, fit } = useMemo(() => {
     const model = scene.clone(true);
     const clothMaterials = [];
     const ownedMaterials = [];
@@ -34,11 +34,17 @@ function TailoredGarment() {
       };
       mesh.material = Array.isArray(mesh.material) ? mesh.material.map(cloneMaterial) : cloneMaterial(mesh.material);
     });
+    // A model may carry a second set of texture coordinates made for prints
+    // (the dress does: its own atlas is cut into small pieces). Designs use it.
+    let patternChannel = 0;
+    model.traverse(mesh => { if (mesh.isMesh && mesh.geometry.attributes.uv1) patternChannel = 1; });
     const box = new Box3().setFromObject(model);
     const size = box.getSize(new Vector3());
     const center = box.getCenter(new Vector3());
-    const scale = Math.min((snap.garment === 'hoodie' ? 0.67 : 0.75) / size.y, 0.66 / size.x);
-    return { model, clothMaterials, ownedMaterials, fit: { scale, position: center.multiplyScalar(-1).toArray() } };
+    // Largest height and width each garment may take in the view.
+    const [maxHeight, maxWidth] = { hoodie: [0.67, 0.66], shoes: [0.75, 0.86], hat: [0.5, 0.7] }[snap.garment] ?? [0.75, 0.66];
+    const scale = Math.min(maxHeight / size.y, maxWidth / size.x);
+    return { model, clothMaterials, ownedMaterials, patternChannel, fit: { scale, position: center.multiplyScalar(-1).toArray() } };
   }, [scene, snap.garment]);
 
   useEffect(() => {
@@ -49,15 +55,21 @@ function TailoredGarment() {
   }, [texture, snap.patternScale, snap.patternRotation, snap.patternOffsetX, snap.patternOffsetY]);
 
   useEffect(() => {
+    if (texture.channel !== patternChannel) {
+      texture.channel = patternChannel;
+      for (const material of clothMaterials) material.needsUpdate = true;
+    }
     for (const material of clothMaterials) {
       updateTailoredMaterial(material, texture, { color: snap.color, isFullTexture: snap.isFullTexture });
     }
-  }, [clothMaterials, texture, snap.color, snap.isFullTexture]);
+  }, [clothMaterials, texture, patternChannel, snap.color, snap.isFullTexture]);
 
   useEffect(() => () => { for (const material of ownedMaterials) material.dispose(); }, [ownedMaterials]);
   useEffect(() => () => texture.dispose(), [texture]);
 
-  return <group scale={fit.scale}>
+  // Shoes and the hat turn to a product three-quarter view.
+  const turn = { shoes: [0.12, -0.5, 0], hat: [0.3, 0.6, 0] }[snap.garment] ?? [0, 0, 0];
+  return <group scale={fit.scale} rotation={turn}>
     <group position={fit.position}><primitive object={model} dispose={null} /></group>
   </group>;
 }

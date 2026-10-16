@@ -2,9 +2,14 @@
 
 `model.glb` is a six-panel baseball cap with a curved brim and a snapback
 strap. It was supplied by the site owner as `hat.glb`, an AI-generated model
-(Blender glTF export, 72 MB, 1.5 million triangles). The generated texture
-(black, with a small white brush-stroke logo on the front) is removed so the
-chosen colour and AI designs show; the normal map keeps the stitching.
+(Blender glTF export, 72 MB, 1.5 million triangles). The generated black
+texture is removed so the chosen colour and AI designs show; the normal map
+keeps the stitching.
+
+**Note:** the cap carries an embossed Jordan "Jumpman" logo on the front left
+panel. It is part of the shape and normal map, so it stays visible in every
+colour. Showing or selling a product with another company's logo can infringe
+their trademark; use a logo-free model before selling hats.
 
 Made with `../pack_generated.py` (see its header for the exact commands):
 

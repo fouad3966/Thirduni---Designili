@@ -8,8 +8,12 @@ import {
     slideAnimation
 } from '../config/motion';
 import CustomButtom from '../comp/CustomButtom'
+import config from '../config/config'
 import GarmentSelector from '../comp/GarmentSelector'
 import state from "../store/index"
+
+// Where the Marketplace button goes: the game's street (see config.js).
+const { gameUrl } = config[import.meta.env.DEV ? 'development' : 'production'];
 
 const Home = () => {
     const snap = useSnapshot(state);
@@ -42,6 +46,7 @@ const Home = () => {
                                 customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap"
                                 handleClick={() => state.intro = false} />
                             <CustomButtom type="filled" title="Wear it" customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap" handleClick={() => state.wearItOpen = true} disabled={Boolean(snap.generatingGarment)} />
+                            {gameUrl && <CustomButtom type="filled" title="Marketplace" customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap" handleClick={() => window.open(gameUrl, '_blank', 'noopener')} />}
                             </div>
                         </motion.div>
                     </motion.div>

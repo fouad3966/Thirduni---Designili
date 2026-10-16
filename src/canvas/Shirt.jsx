@@ -6,7 +6,7 @@ import { easing } from 'maath';
 import { useSnapshot } from 'valtio';
 import { createFabricMaterial, createFabricTexture, setFabricTransform } from '../config/fabricTexture';
 import { createLogoBackgroundMask } from '../config/logoMask';
-import { createTextTextureHolder, drawTextOnCanvas } from '../config/textTexture';
+import useTextTexture from './useTextTexture';
 import state from '../store';
 
 const Shirt = () => {
@@ -27,44 +27,8 @@ const Shirt = () => {
     [logoTexture, snap.removeLogoBackground]
   );
 
-  // Dynamic canvas texture for custom text
-  const { canvas: textCanvas, texture: textTexture } = useMemo(() => createTextTextureHolder(), []);
-
-  useEffect(() => {
-    drawTextOnCanvas(textCanvas, {
-      text: snap.textContent,
-      font: snap.textFont,
-      textColor: snap.textColor,
-      textSize: snap.textSize,
-      isUppercase: snap.textUppercase,
-      isCurved: snap.textCurved,
-      curveRadius: snap.textCurveRadius,
-      hasOutline: snap.textBorder,
-      outlineColor: snap.textBorderColor,
-      outlineWidth: snap.textBorderWidth,
-      hasShadow: snap.textShadow,
-      shadowColor: snap.textShadowColor,
-      printStyle: snap.textPrintStyle,
-    });
-    textTexture.needsUpdate = true;
-  }, [
-    textCanvas,
-    textTexture,
-    snap.isTextTexture,
-    snap.textContent,
-    snap.textFont,
-    snap.textColor,
-    snap.textSize,
-    snap.textUppercase,
-    snap.textCurved,
-    snap.textCurveRadius,
-    snap.textBorder,
-    snap.textBorderColor,
-    snap.textBorderWidth,
-    snap.textShadow,
-    snap.textShadowColor,
-    snap.textPrintStyle,
-  ]);
+  // The customer's text, as a texture (shared with the other garments).
+  const textTexture = useTextTexture(snap);
 
   useEffect(() => {
     logoTexture.colorSpace = SRGBColorSpace;
@@ -110,7 +74,6 @@ const Shirt = () => {
   useEffect(() => () => fabricTexture.dispose(), [fabricTexture]);
   useEffect(() => () => material.dispose(), [material]);
   useEffect(() => () => backgroundMask?.dispose(), [backgroundMask]);
-  useEffect(() => () => textTexture.dispose(), [textTexture]);
 
   // Direct 3D mesh interaction: drag or click to position text or logo
   const dragTarget = useRef('text'); // 'logo' | 'text'

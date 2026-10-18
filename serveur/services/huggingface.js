@@ -15,7 +15,23 @@ const textileStyles = {
 };
 
 const isValidSeed = (seed) => Number.isInteger(seed) && seed >= 0 && seed <= 2147483647;
-const garmentNames = { tshirt: 'T-shirt', dress: 'dress', suit: 'tailored suit', hoodie: 'hoodie' };
+// Every garment on the site (src/config/garments/catalog.js), as the image
+// model should read it.
+const garmentNames = {
+    tshirt: 'T-shirt', dress: 'dress', caftan: 'Moroccan caftan', karakou: 'Algerian karakou',
+    hoodie: 'hoodie', hat: 'baseball cap', shoes: 'sneaker',
+};
+
+// The caftan and the karakou are made to a tradition, so their designs follow
+// it instead of the four modern styles: the motifs, materials, colours and
+// symmetrical layout of each craft. The AI designs the ground fabric only; the
+// model's own gold embroidery is laid over it in the viewer, so the ground
+// stays calm and tone-on-tone.
+const STAY_TRADITIONAL = 'Stay within the tradition: no modern graphics, sportswear, streetwear, cartoons, animals, human figures, neon colours, slogans or brand logos.';
+const traditions = {
+    caftan: 'Traditional Moroccan caftan fabric, true to the craft: a ceremonial brocade or silk damask ground in the Fassi and Andalusian-Moorish heritage, with arabesque scrolls, stylised carnations and roses and zellige-inspired eight-pointed stars, laid out symmetrically and mirrored, in a refined small-to-medium ornament with an even, dignified rhythm. Jewel tones such as emerald, sapphire, ruby, burgundy, ivory and champagne, with gold or silver as the only metallic accents. This is the ground fabric under separate gold trims and embroidery, so keep it calm and tone-on-tone.',
+    karakou: 'Traditional Algerian karakou fabric, true to the craft: a deep velvet ground in the Ottoman-Algerian ceremonial heritage of Algiers, in the spirit of majboud and fetla gold embroidery, with symmetrical floral arabesques, flowing vines, carnations, roses and crescent-shaped leaves, ornamental but never busy. Deep velvet colours such as black, burgundy, bottle green, navy and royal purple, with gold as the only accent. This is the ground fabric under separate gold embroidery, so keep it dark, subtle and tone-on-tone.',
+};
 
 // Share validation between the route and adapter so invalid options never use GPU time.
 export const normalizeArtworkOptions = ({ mode = 'full', style = 'sport', palette, seed, garment = 'tshirt' } = {}) => {
@@ -33,7 +49,7 @@ export const normalizeArtworkOptions = ({ mode = 'full', style = 'sport', palett
         throw new ImageGenerationError('The design seed must be a whole number from 0 to 2147483647.', 400);
     }
     if (typeof garment !== 'string' || !Object.hasOwn(garmentNames, garment)) {
-        throw new ImageGenerationError('Choose a T-shirt, dress, suit, or hoodie.', 400);
+        throw new ImageGenerationError(`Choose one of: ${Object.values(garmentNames).join(', ')}.`, 400);
     }
     return { mode, style, palette: palette?.map((color) => color.toUpperCase()), seed, garment };
 };
@@ -42,10 +58,12 @@ export const buildArtworkPrompt = (prompt, mode = 'full', { style = 'sport', pal
     if (mode === 'logo') {
         return `Create a centered T-shirt print illustration, isolated on a plain white background, with bold clean outlines and generous margins. Artwork only: no T-shirt, clothing mockup, person, photograph of a product, or watermark. Design description: ${prompt}`;
     }
+    const tradition = traditions[garment];
     const colors = palette?.length
         ? `Use only this coordinated palette: ${palette.join(', ')}.`
-        : 'Follow the described colors; keep the palette coordinated.';
-    return `Professional flat seamless repeating textile pattern for a ${garmentNames[garment]}, edge-to-edge. ${textileStyles[style]} ${colors} Medium-scale motifs, deliberate breathing room, matching edges and crisp shapes. Artwork only: no T-shirt, clothing mockup, person, product photograph, fabric folds, lighting, shadows, logos, lettering, borders or watermark. Design description: ${prompt}`;
+        : tradition ? 'Follow the described colors within the traditional palette.' : 'Follow the described colors; keep the palette coordinated.';
+    const direction = tradition ? `${tradition} ${STAY_TRADITIONAL}` : textileStyles[style];
+    return `Professional flat seamless repeating textile pattern for a ${garmentNames[garment]}, edge-to-edge. ${direction} ${colors} Medium-scale motifs, deliberate breathing room, matching edges and crisp shapes. Artwork only: no T-shirt, clothing mockup, person, product photograph, fabric folds, lighting, shadows, logos, lettering, borders or watermark. Design description: ${prompt}`;
 };
 
 const normalizeError = (error, authenticated) => {

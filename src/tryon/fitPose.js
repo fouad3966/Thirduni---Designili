@@ -9,6 +9,9 @@ export const GARMENT_FIT = Object.freeze({
   tshirt: { shoulderWidth: 0.34, torsoLength: 0.52, shoulderY: 0.245, needsHips: false },
   hoodie: { shoulderWidth: 0.353, torsoLength: 0.516, shoulderY: 0.208, needsHips: false },
   dress: { shoulderWidth: 0.291, torsoLength: 0.354, shoulderY: 0.375, needsHips: true },
+  // Ankle-length: shoulders at the top edge, hips about a third of the way down.
+  caftan: { shoulderWidth: 0.24, torsoLength: 0.25, shoulderY: 0.375, needsHips: true },
+  karakou: { shoulderWidth: 0.22, torsoLength: 0.25, shoulderY: 0.375, needsHips: true },
 });
 
 export const canWear = (garment) => Object.hasOwn(GARMENT_FIT, garment);

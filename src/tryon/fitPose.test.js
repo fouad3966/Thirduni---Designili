@@ -108,6 +108,8 @@ test('shoes and the hat are never fitted to the body, and say so', () => {
   assert.equal(canWear('hat'), false);
   assert.match(framingHint('shoes'), /can.t be tried on/);
   assert.equal(canWear('dress'), true);
+  assert.equal(canWear('caftan'), true);
+  assert.equal(canWear('karakou'), true);
 });
 
 test('manual fit controls are bounded and vertical movement uses torso proportions', () => {

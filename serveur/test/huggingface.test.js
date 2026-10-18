@@ -142,13 +142,25 @@ test('default generation requests all-over sport textile artwork with a randomiz
 });
 
 test('garment selection reaches the textile brief while keeping user colors', async () => {
-    for (const [garment, label] of [['tshirt', 'T-shirt'], ['dress', 'dress'], ['suit', 'tailored suit'], ['hoodie', 'hoodie']]) {
+    for (const [garment, label] of [['tshirt', 'T-shirt'], ['dress', 'dress'], ['hoodie', 'hoodie'], ['hat', 'baseball cap'], ['shoes', 'sneaker']]) {
         const { options, calls } = fixture();
         await generateWithHuggingFace('Pink fabric with white petals', { ...options, garment, style: 'botanical' });
         const prompt = calls.submissions[0][1].prompt;
         assert.ok(prompt.includes(`pattern for a ${label}`));
         assert.ok(prompt.includes('Pink fabric with white petals'));
         assert.doesNotMatch(prompt, /deep navy, burgundy/);
+    }
+});
+
+test('the caftan and the karakou follow their tradition instead of the modern styles', async () => {
+    for (const [garment, heritage] of [['caftan', /Moroccan caftan fabric.*Andalusian-Moorish/], ['karakou', /Algerian karakou fabric.*majboud and fetla/]]) {
+        const { options, calls } = fixture();
+        await generateWithHuggingFace('emerald with gold scrolls', { ...options, garment, style: 'sport' });
+        const prompt = calls.submissions[0][1].prompt;
+        assert.match(prompt, heritage);
+        assert.match(prompt, /Stay within the tradition/);
+        assert.doesNotMatch(prompt, /Technical sportswear/);
+        assert.match(prompt, /emerald with gold scrolls$/);
     }
 });
 

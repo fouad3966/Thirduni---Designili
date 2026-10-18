@@ -12,6 +12,8 @@ import useTextTexture from './useTextTexture';
 const PAD = { halfX: 0.2, centreY: -0.02, halfY: 0.22 };
 const PRINT_AREAS = {
   dress: { cx: 0.5, cy: 0.74, halfX: 0.16, halfY: 0.11 },   // the bodice
+  caftan: { cx: 0.5, cy: 0.7, halfX: 0.2, halfY: 0.08 },    // under the belt (the neckline is embroidered)
+  karakou: { cx: 0.5, cy: 0.8, halfX: 0.18, halfY: 0.07 },  // the jacket's chest
   hoodie: { cx: 0.5, cy: 0.6, halfX: 0.2, halfY: 0.14 },    // the chest, under the hood
   hat: { cx: 0.5, cy: 0.62, halfX: 0.2, halfY: 0.16 },      // the front panels
   shoes: { cx: 0.5, cy: 0.42, halfX: 0.2, halfY: 0.14 },    // the outer side

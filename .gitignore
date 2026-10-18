@@ -27,3 +27,8 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Videos: the promo edit and screen recordings stay on this computer
+promo-video/
+promo.mp4
+Screen Recording*.mov

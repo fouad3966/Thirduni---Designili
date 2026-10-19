@@ -28,18 +28,130 @@ html {
 
 .app {
   @apply relative w-full h-screen overflow-hidden;
+  background-color: #0b0d14;
+}
+
+/* Dynamic Animated Studio Atelier Background */
+.dynamic-background-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 40%, #151924 0%, #0c0e15 65%, #06070b 100%);
+  pointer-events: none;
+}
+
+.studio-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.42) 2.2px, transparent 2.5px),
+    linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 36px 36px, 36px 36px, 36px 36px;
+  background-position: 0 0, 0 0, 0 0;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 90%, rgba(0, 0, 0, 0.8) 98%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 90%, rgba(0, 0, 0, 0.8) 98%, transparent 100%);
+  opacity: 1;
+}
+
+.studio-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.orb-violet {
+  top: 10%;
+  right: 10%;
+  width: min(560px, 85vw);
+  height: min(560px, 85vw);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.36) 0%, rgba(109, 40, 217, 0.16) 50%, transparent 70%);
+  animation: orbDrift1 18s ease-in-out infinite alternate;
+}
+
+.orb-amber {
+  bottom: 5%;
+  left: 8%;
+  width: min(500px, 80vw);
+  height: min(500px, 80vw);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.08) 50%, transparent 70%);
+  animation: orbDrift2 22s ease-in-out infinite alternate;
+}
+
+.orb-indigo {
+  top: -10%;
+  left: 32%;
+  width: min(620px, 90vw);
+  height: min(620px, 90vw);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(67, 56, 202, 0.08) 50%, transparent 70%);
+  animation: orbDrift3 26s ease-in-out infinite alternate;
+}
+
+@keyframes orbDrift1 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(-45px, 35px) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(30px, -25px) scale(0.95);
+    opacity: 0.75;
+  }
+}
+
+@keyframes orbDrift2 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(55px, -40px) scale(1.2);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(-30px, 20px) scale(0.9);
+    opacity: 0.65;
+  }
+}
+
+@keyframes orbDrift3 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-35px, 45px) scale(1.1);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(40px, -20px) scale(1);
+    opacity: 0.55;
+  }
 }
 
 .home {
-  @apply w-fit xl:h-full flex xl:justify-between justify-start items-start flex-col xl:py-8 xl:px-36 sm:p-8 p-6 max-xl:gap-7 absolute z-10;
+  @apply w-fit max-w-full xl:h-full flex xl:justify-between justify-start items-start flex-col xl:py-10 xl:px-28 lg:px-16 md:px-12 sm:p-8 p-5 max-xl:gap-6 absolute z-10 pointer-events-auto;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .home-content {
-  @apply flex-1 xl:justify-center justify-start flex flex-col gap-10;
+  @apply flex-1 xl:justify-center justify-start flex flex-col gap-6 sm:gap-8 max-w-full;
 }
 
 .head-text {
-  @apply xl:text-[10rem] text-[6rem] xl:leading-[11rem] leading-[7rem] font-black;
+  font-size: clamp(2.75rem, 9.5vw, 9.5rem);
+  line-height: clamp(3rem, 10vw, 10rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
 }
 
 .download-btn {
@@ -47,7 +159,12 @@ html {
 }
 
 .editortabs-container {
-  @apply glassmorphism w-16 border-[2px] rounded-lg flex flex-col justify-center items-center ml-1 py-4 gap-4;
+  @apply w-16 rounded-2xl flex flex-col justify-center items-center ml-2 py-3 gap-3;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .filtertabs-container {
@@ -55,25 +172,38 @@ html {
 }
 
 .aipicker-container {
-  @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] rounded-md flex flex-col gap-4;
+  @apply absolute left-full ml-4 p-4 w-[280px] sm:w-[320px] rounded-2xl flex flex-col gap-3 text-slate-100;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .aipicker-textarea {
-  @apply w-full bg-transparent text-sm border border-gray-300 p-2 outline-none flex-1;
+  @apply w-full bg-slate-800/90 text-white text-sm border border-slate-700/80 p-2.5 rounded-xl outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 flex-1 transition placeholder-slate-400;
 }
 
 .filepicker-container {
-  @apply absolute left-full ml-3 glassmorphism p-3.5 w-[255px] flex flex-col rounded-xl text-gray-800;
+  @apply absolute left-full ml-4 p-4 w-[275px] sm:w-[305px] flex flex-col rounded-2xl text-slate-100;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   max-height: calc(100dvh - 80px);
   overflow-y: auto;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .textpicker-container {
-  @apply absolute left-full ml-3 glassmorphism p-3 w-[255px] flex flex-col rounded-xl text-gray-800;
+  @apply absolute left-full ml-4 p-4 w-[275px] sm:w-[305px] flex flex-col rounded-2xl text-slate-100;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   max-height: calc(100dvh - 80px);
   overflow-y: auto;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -81,33 +211,33 @@ html {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.4);
+  background: rgba(139, 92, 246, 0.4);
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.7);
+  background: rgba(139, 92, 246, 0.7);
 }
 
 .filepicker-label {
-  @apply border border-gray-300 py-1.5 px-2 rounded-md shadow-sm text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer w-fit;
+  @apply border border-slate-600/80 bg-slate-800/90 hover:bg-slate-700 py-1.5 px-3 rounded-lg shadow-sm text-xs text-white focus:outline-none focus:ring-1 focus:ring-violet-500 focus:border-violet-500 cursor-pointer w-fit transition font-medium;
 }
 
 .tab-btn {
-  @apply w-14 h-14 flex justify-center items-center cursor-pointer select-none;
+  @apply w-12 h-12 flex justify-center items-center cursor-pointer select-none;
 }
 
 .glassmorphism {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(15, 23, 42, 0.75);
+  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 input[type="file"] {
@@ -117,13 +247,25 @@ input[type="file"] {
 }
 
 .sketch-picker {
-  width: 170px !important;
-  background: rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07) !important;
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  width: 180px !important;
+  background: rgba(15, 23, 42, 0.94) !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 14px !important;
+  color: #fff !important;
+}
+
+.sketch-picker input {
+  background: #1e293b !important;
+  color: #fff !important;
+  border: 1px solid #475569 !important;
   border-radius: 6px !important;
+}
+
+.sketch-picker label {
+  color: #94a3b8 !important;
 }
 
 .sketch-picker>div:nth-child(3) {
@@ -134,26 +276,34 @@ input[type="file"] {
   display: flex;
   width: fit-content;
   max-width: 100%;
-  padding: 4px;
-  gap: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(8px);
+  padding: 5px;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .garment-selector button {
-  padding: 9px 13px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 9px;
   font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.02em;
   white-space: nowrap;
-  color: #fff;
-  transition: background-color 160ms ease, color 160ms ease;
+  color: #e2e8f0;
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 .garment-selector button:not([aria-pressed='true']):hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .garment-selector button:focus-visible {
@@ -174,13 +324,22 @@ input[type="file"] {
   z-index: 20;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .garment-selector-editor {
-    top: 78px;
+    top: 72px;
+    width: calc(100% - 24px);
+    display: flex;
+    justify-content: center;
+  }
+
+  .garment-selector {
+    max-width: 100%;
+    padding: 3px;
+    gap: 3px;
   }
 
   .garment-selector button {
-    padding: 8px 11px;
+    padding: 7px 10px;
     font-size: 11px;
   }
 }

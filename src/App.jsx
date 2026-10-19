@@ -10,7 +10,15 @@ const WearIt = lazy(() => import('./tryon/WearIt'));
 function App() {
   const snap = useSnapshot(state);
   return (
-    <main className="app transition-all ease-in bg-gray-300">
+    <main className="app transition-all ease-in">
+      {/* Dynamic Animated Studio Atelier Background */}
+      <div className="dynamic-background-container" aria-hidden="true">
+        <div className="studio-orb orb-violet" />
+        <div className="studio-orb orb-amber" />
+        <div className="studio-orb orb-indigo" />
+        <div className="studio-bg-pattern" />
+      </div>
+
       {!snap.preview && <Home />}
       <Canvas />
       {!snap.preview && <Costumizer />}

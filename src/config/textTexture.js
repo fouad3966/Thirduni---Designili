@@ -18,7 +18,18 @@ export const AVAILABLE_FONTS = [
   { id: 'Anton', name: 'Anton', family: '"Anton", sans-serif', style: 'Heavy Poster' },
   { id: 'Space Grotesk', name: 'Space', family: '"Space Grotesk", sans-serif', style: 'Futuristic Tech' },
   { id: 'Permanent Marker', name: 'Marker', family: '"Permanent Marker", cursive', style: 'Graffiti / Grunge' },
+  // Arabic-script fonts (used for darja / Arabic text)
+  { id: 'Cairo', name: 'Cairo \u0642\u0627\u0647\u0631\u0629', family: '"Cairo", sans-serif', style: 'Arabic Modern', script: 'arabic' },
+  { id: 'Reem Kufi', name: 'Reem Kufi \u0643\u0648\u0641\u064a', family: '"Reem Kufi", sans-serif', style: 'Arabic Kufi', script: 'arabic' },
+  { id: 'Aref Ruqaa', name: 'Aref Ruqaa \u0631\u0642\u0639\u0629', family: '"Aref Ruqaa", serif', style: 'Arabic Calligraphy', script: 'arabic' },
 ];
+
+export const ARABIC_DEFAULT_FONT = 'Cairo';
+export const hasArabic = (text) => /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(text ?? ''));
+
+export function getFontFamily(fontId) {
+  return (AVAILABLE_FONTS.find(f => f.id === fontId) || AVAILABLE_FONTS[0]).family;
+}
 
 export const COLOR_PRESETS = [
   '#ffffff', // Clean White
@@ -70,22 +81,27 @@ export function drawTextOnCanvas(canvas, options = {}) {
   const rawText = (text || '').trim();
   if (!rawText) return;
 
-  const processedText = isUppercase ? rawText.toUpperCase() : rawText;
+  const textHasArabic = hasArabic(rawText);
+  // Uppercasing is meaningless for Arabic; skipping it also avoids touching Latin parts of mixed text.
+  const processedText = isUppercase && !textHasArabic ? rawText.toUpperCase() : rawText;
   const lines = processedText.split('\n').filter(Boolean);
   if (!lines.length) return;
 
   const fontConfig = AVAILABLE_FONTS.find(f => f.id === font) || AVAILABLE_FONTS[0];
+  // Latin display fonts have no Arabic glyphs: fall back to an Arabic font for those characters.
+  const fontFamily = textHasArabic ? `${fontConfig.family}, "Cairo", sans-serif` : fontConfig.family;
   const baseFontSize = Math.round(92 * (textSize || 1));
 
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  if (isCurved && lines.length === 1) {
+  // The arc draws one glyph at a time, which would break Arabic letter joining, so Arabic stays flat.
+  if (isCurved && lines.length === 1 && !textHasArabic) {
     // Vintage varsity arched text along a circle arc
     const str = lines[0];
     const r = Math.max(120, curveRadius);
-    ctx.font = `bold ${baseFontSize}px ${fontConfig.family}`;
+    ctx.font = `bold ${baseFontSize}px ${fontFamily}`;
 
     // Measure total width
     let charWidths = [];
@@ -143,7 +159,8 @@ export function drawTextOnCanvas(canvas, options = {}) {
       const y = startY + index * lineHeight;
       const x = CANVAS_WIDTH / 2;
 
-      ctx.font = `bold ${baseFontSize}px ${fontConfig.family}`;
+      ctx.font = `bold ${baseFontSize}px ${fontFamily}`;
+      ctx.direction = hasArabic(line) ? 'rtl' : 'ltr';
 
       if (hasShadow) {
         ctx.shadowColor = shadowColor;

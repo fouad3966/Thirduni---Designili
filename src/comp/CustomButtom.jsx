@@ -6,9 +6,9 @@ const generateStyle = (type, snap) => {
     if (type === 'filled') {
         return {
             backgroundColor: snap.color,
-            color: getContrastingColor(snap.color)
+            color: getContrastingColor(snap.color),
+            boxShadow: '0 4px 15px -2px rgba(0, 0, 0, 0.3)',
         }
-        
     }else if(type==='outline'){
       return{
         borderWidth:"1px",

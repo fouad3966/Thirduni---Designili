@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import config from '../config/config'
-import state from '../store'
+import state, { toggleFlip, selectGarment } from '../store'
 import CustomButtom from '../comp/CustomButtom'
 import { reader } from '../config/helpers'
 import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants'
@@ -14,9 +14,11 @@ import TextPicker from '../comp/TextPicker'
 import DesignHistoryDropdown from '../comp/DesignHistoryDropdown'
 import Tab from '../comp/Tab'
 import GarmentSelector from '../comp/GarmentSelector'
-import { getFabricDirection, getFabricTrimColor } from '../config/fullDesign'
-import { toggleFlip } from '../store'
+import { getFabricTrimColor } from '../config/fullDesign'
 import { addDesignToHistory } from '../config/designHistory'
+import ExportModal from '../comp/ExportModal'
+import { hasArabic, ARABIC_DEFAULT_FONT } from '../config/textTexture'
+import { analyzePaletteMatch, matchImageToPalette } from '../config/palette'
 
 const Costumizer = () => {
   const snap = useSnapshot(state);
@@ -24,7 +26,13 @@ const Costumizer = () => {
   const [prompt, setPrompt] = useState('');
   const [generatingImg, setGeneratingImg] = useState(false);
   const [generationError, setGenerationError] = useState('');
+  const [interpretation, setInterpretation] = useState(null);
+  const [previewing, setPreviewing] = useState(false);
+  const [colorMatch, setColorMatch] = useState(null);
+  const [matching, setMatching] = useState(false);
+  const generated = useRef(null); // { image, palette } of the latest AI design, for color matching
   const [activeEditorTab, setActiveEditorTab] = useState('');
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const generationRequest = useRef(null);
 
   useEffect(() => () => generationRequest.current?.abort(), []);
@@ -47,7 +55,8 @@ const Costumizer = () => {
         method: 'POST',
         signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: trimmedPrompt, mode: 'full', style: getFabricDirection(trimmedPrompt), garment: state.garment }),
+        // style 'auto': the server picks it (darja-aware); garment is the current one unless the prompt names another.
+        body: JSON.stringify({ prompt: trimmedPrompt, mode: 'full', style: 'auto', garment: state.garment }),
       });
       const data = await response.json().catch(() => null);
       if (!response.ok) {
@@ -66,6 +75,13 @@ const Costumizer = () => {
         throw new Error('The generated image could not be opened. Please try again.');
       }
       if (controller.signal.aborted) throw new DOMException('Generation timed out', 'AbortError');
+      const understood = data?.interpretation && data.interpretation.source !== 'passthrough' ? data.interpretation : null;
+      setInterpretation(understood);
+      // The prompt named another garment ("bghit hoodie ..."): switch before applying the design.
+      if (understood?.garment && understood.garment !== state.garment) {
+        state.generatingGarment = null; // selectGarment refuses to switch while a generation is flagged
+        selectGarment(understood.garment);
+      }
       state.patternScale = 1;
       state.patternRotation = 0;
       state.patternOffsetX = 0;
@@ -73,7 +89,28 @@ const Costumizer = () => {
       state.trimColor = getFabricTrimColor(generatedImage);
       state.useTrim = true;
       handleDecals('full', imageUrl);
-      addDesignToHistory({ title: trimmedPrompt, fullDecal: imageUrl, trimColor: state.trimColor });
+      addDesignToHistory({
+        title: trimmedPrompt,
+        fullDecal: imageUrl,
+        trimColor: state.trimColor,
+        isFullTexture: true,
+        isLogoTexture: false,
+      });
+      // Did the model use the colors the user asked for? If not, offer a one-click fix.
+      generated.current = { image: generatedImage, palette: understood?.palette ?? null, matchedUrl: null };
+      setColorMatch(understood?.palette
+        ? { ...analyzePaletteMatch(generatedImage, understood.palette), originalUrl: imageUrl, matchedUrl: null }
+        : null);
+      // Text the user asked to print ("ktiba "DZ" fel sder") goes through the text tool, not the image model.
+      if (understood?.textOnGarment && state.garment === 'tshirt') {
+        state.textContent = understood.textOnGarment;
+        state.isTextTexture = true;
+        if (hasArabic(understood.textOnGarment)) {
+          state.textFont = ARABIC_DEFAULT_FONT;
+          state.textUppercase = false;
+          state.textCurved = false;
+        }
+      }
       setActiveEditorTab('');
     } catch (error) {
       setGenerationError(controller.signal.aborted
@@ -86,6 +123,71 @@ const Costumizer = () => {
       generationRequest.current = null;
       state.generatingGarment = null;
       setGeneratingImg(false);
+    }
+  };
+
+  // Cheap "what did you understand?" check (no image generation, no GPU quota).
+  const handlePreview = async () => {
+    const trimmedPrompt = prompt.trim();
+    if (!trimmedPrompt || previewing) return;
+    setPreviewing(true);
+    setGenerationError('');
+    try {
+      const response = await fetch(config[import.meta.env.DEV ? 'development' : 'production'].nlpUrl, {
+        method: 'POST',
+        signal: AbortSignal.timeout(20000),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: trimmedPrompt }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(typeof data?.message === 'string' ? data.message : `Could not read the prompt (${response.status}).`);
+      setInterpretation(data?.interpretation ?? null);
+    } catch (error) {
+      setGenerationError(error instanceof TypeError || error.name === 'TimeoutError'
+        ? 'Could not reach the server to read the prompt. Check that the backend is running.'
+        : error.message);
+    } finally {
+      setPreviewing(false);
+    }
+  };
+
+  // Apply a design image to the garment, keeping the collar/cuff trim in step with its colors.
+  const applyDesignImage = async (url) => {
+    const image = new Image();
+    image.src = url;
+    await image.decode();
+    state.trimColor = getFabricTrimColor(image);
+    handleDecals('full', url);
+  };
+
+  const handleMatchColors = async () => {
+    const latest = generated.current;
+    if (!latest?.palette || matching) return;
+    setMatching(true);
+    setGenerationError('');
+    try {
+      const matchedUrl = latest.matchedUrl ?? matchImageToPalette(latest.image, latest.palette);
+      if (!matchedUrl) {
+        setGenerationError('This design is too flat to recolor automatically. Try generating it again.');
+        return;
+      }
+      latest.matchedUrl = matchedUrl;
+      await applyDesignImage(matchedUrl);
+      setColorMatch((current) => current && { ...current, status: 'matched', matchedUrl });
+    } catch {
+      setGenerationError('Could not recolor the design. Please try again.');
+    } finally {
+      setMatching(false);
+    }
+  };
+
+  const handleRestoreColors = async () => {
+    if (!colorMatch?.originalUrl) return;
+    try {
+      await applyDesignImage(colorMatch.originalUrl);
+      setColorMatch((current) => current && { ...current, status: 'drift' });
+    } catch {
+      setGenerationError('Could not restore the original colors.');
     }
   };
 
@@ -134,7 +236,23 @@ const Costumizer = () => {
     switch (activeEditorTab) {
       case 'colorpicker': return <ColorPicker />;
       case 'filepicker': return <FilePiker file={file} setFile={setFile} readFile={readFile} supportsLogo={snap.garment === 'tshirt'} />;
-      case 'aipicker': return <AIPicker prompt={prompt} setPrompt={setPrompt} generatingImg={generatingImg} generationError={generationError} handleSubmit={handleSubmit} />;
+      case 'aipicker': return (
+        <AIPicker
+          prompt={prompt}
+          setPrompt={(value) => { setPrompt(value); setInterpretation(null); }}
+          generatingImg={generatingImg}
+          generationError={generationError}
+          handleSubmit={handleSubmit}
+          interpretation={interpretation}
+          previewing={previewing}
+          handlePreview={handlePreview}
+          colorMatch={colorMatch && snap.fullDecal === (colorMatch.status === 'matched' ? colorMatch.matchedUrl : colorMatch.originalUrl) ? colorMatch : null}
+          matching={matching}
+          handleMatchColors={handleMatchColors}
+          handleRestoreColors={handleRestoreColors}
+          garment={snap.garment}
+        />
+      );
       case 'textpicker': return <TextPicker />;
       default: return null;
     }
@@ -160,18 +278,40 @@ const Costumizer = () => {
               </div>
             </div>
           </motion.div>
-          <motion.div className='absolute z-10 top-5 right-5 flex flex-col items-end gap-2' {...fadeAnimation}>
-            <div className='flex gap-2'>
+          <motion.div className='absolute z-10 top-3 right-3 sm:top-5 sm:right-5 flex flex-col items-end gap-2 sm:gap-2.5 max-w-[calc(100vw-24px)]' {...fadeAnimation}>
+            <div className='flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end'>
               <CustomButtom
                 type='filled'
                 title={snap.isFlipped ? '🔄 Front View' : '🔄 Flip to Back'}
                 handleClick={toggleFlip}
-                customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap'
+                customStyles='w-fit px-2.5 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm whitespace-nowrap rounded-lg'
               />
-              <CustomButtom type='filled' title='Wear it' handleClick={() => state.wearItOpen = true} disabled={generatingImg} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
-              <CustomButtom type='filled' title='Go Back' handleClick={() => state.intro = true} customStyles='w-fit px-4 py-2.5 font-bold text-sm whitespace-nowrap' />
+              <CustomButtom
+                type='filled'
+                title='Wear it'
+                handleClick={() => state.wearItOpen = true}
+                disabled={generatingImg}
+                customStyles='w-fit px-2.5 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm whitespace-nowrap rounded-lg'
+              />
+              <CustomButtom
+                type='filled'
+                title='Go Back'
+                handleClick={() => state.intro = true}
+                customStyles='w-fit px-2.5 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm whitespace-nowrap rounded-lg'
+              />
             </div>
-            <DesignHistoryDropdown />
+            <div className='flex items-center gap-2'>
+              <button
+                type='button'
+                onClick={() => setIsExportOpen(true)}
+                className='flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-emerald-500/50'
+                title='Export production spec sheet (Front & Back)'
+              >
+                <span>📐</span>
+                <span>Export Spec Sheet</span>
+              </button>
+              <DesignHistoryDropdown />
+            </div>
           </motion.div>
           <motion.div className='filtertabs-container' {...slideAnimation('up')}>
             {FilterTabs.filter(tab => snap.garment === 'tshirt' || (tab.name !== 'logoShirt' && tab.name !== 'textShirt')).map(tab => (
@@ -190,6 +330,7 @@ const Costumizer = () => {
               />
             ))}
           </motion.div>
+          <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
         </>
       )}
     </AnimatePresence>

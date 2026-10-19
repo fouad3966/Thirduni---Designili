@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 import cors from 'cors'
 import dalleRoutes from './route/dalle.routes.js'
 import tryOnRoutes from './route/tryon.routes.js'
+import nlpRoutes from './route/nlp.routes.js'
 
 
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(express.json({limit:"16kb"}))
 
 app.use('/api/v1/dalle',dalleRoutes)
 app.use('/api/v1/tryon',tryOnRoutes)
+app.use('/api/v1/nlp',nlpRoutes)
 app.get('/',(req,res)=>{
     res.status(200).json({message:"Shirt image generation backend"})
 })

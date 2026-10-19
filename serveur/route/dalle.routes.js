@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 import OpenAI from 'openai'
 import { fileURLToPath } from 'node:url'
 import { generateWithHuggingFace, ImageGenerationError, normalizeArtworkOptions } from '../services/huggingface.js'
+import { understandPrompt, toPublicBrief } from '../services/darja.js'
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)) });
 
@@ -86,11 +87,28 @@ router.route('/').post(async (req, res) => {
         if (typeof prompt !== 'string' || !prompt.trim() || prompt.length > 2000) {
             return res.status(400).json({ message: 'Enter a prompt between 1 and 2000 characters.' });
         }
-        const artworkOptions = normalizeArtworkOptions({ mode, style, palette, seed, garment });
+
+        // Darja / Arabizi / Arabic-script prompts are interpreted into an English design brief.
+        // English and French prompts pass through untouched (no extra latency or LLM call).
+        const brief = await understandPrompt(prompt.trim(), { signal: controller.signal });
+
+        // The brief only fills in what the client left open: an explicit style, palette or
+        // garment sent by the client always wins, except that a garment named in the prompt
+        // ("bghit hoodie...") switches the garment. Remove `switchGarment` to disable that.
+        const switchGarment = brief.garment && (brief.source === 'lexicon' || brief.confidence >= 0.6);
+        const resolvedStyle = style === undefined || style === 'auto' ? (brief.style || 'abstract') : style;
+        const resolvedPalette = palette === undefined ? (brief.palette || undefined) : palette;
+        const resolvedGarment = switchGarment ? brief.garment : garment;
+        const effectivePrompt = brief.englishPrompt || prompt.trim();
+        const interpretation = toPublicBrief(brief, { style: resolvedStyle, garment: resolvedGarment ?? brief.garment });
+
+        const artworkOptions = normalizeArtworkOptions({
+            mode, style: resolvedStyle, palette: resolvedPalette, seed, garment: resolvedGarment,
+        });
 
         if (IMAGE_PROVIDER === 'huggingface') {
-            const image = await generateWithHuggingFace(prompt.trim(), { ...artworkOptions, signal: controller.signal });
-            if (!controller.signal.aborted) res.status(200).json(image);
+            const image = await generateWithHuggingFace(effectivePrompt, { ...artworkOptions, signal: controller.signal });
+            if (!controller.signal.aborted) res.status(200).json({ ...image, interpretation });
             return;
         }
 
@@ -102,9 +120,9 @@ router.route('/').post(async (req, res) => {
 
         const generator = Object.hasOwn(generators, IMAGE_PROVIDER) ? generators[IMAGE_PROVIDER] : null;
         if (!generator) throw new ImageGenerationError('Unknown IMAGE_PROVIDER. Set IMAGE_PROVIDER=huggingface in serveur/.env.', 503);
-        const image = await generator(prompt.trim());
+        const image = await generator(effectivePrompt);
 
-        res.status(200).json({ photo: image });
+        res.status(200).json({ photo: image, interpretation });
     } catch (error) {
         if (controller.signal.aborted) return;
         // Provider errors can contain authorization headers: do not log raw error objects.

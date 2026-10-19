@@ -2,20 +2,24 @@
 
 export const EditorTabs = [
   {
-    name: "colorpicker",
-    icon: "./swatch.png",
-  },
-  {
-    name: "filepicker",
-    icon: "./file.png",
-  },
-  {
     name: "aipicker",
     icon: "./ai.png",
+    label: "AI Prompt",
+  },
+  {
+    name: "colorpicker",
+    icon: "./swatch.png",
+    label: "Garment Color",
   },
   {
     name: "textpicker",
     icon: "./text.png",
+    label: "Text Decal",
+  },
+  {
+    name: "filepicker",
+    icon: "./file.png",
+    label: "Image Decal",
   },
 ];
 

@@ -1,4 +1,5 @@
 import { Client } from '@gradio/client';
+import { describePalette } from './colors.js';
 
 export class ImageGenerationError extends Error {
     constructor(message, status = 502) {
@@ -12,6 +13,7 @@ const textileStyles = {
     minimal: 'Minimal designer textile: sparse geometric forms, deliberate spacing, clean contours and understated contrast.',
     botanical: 'Botanical textile: stylized leaves and stems, flowing repeat rhythm and simplified organic shapes.',
     abstract: 'Modern abstract textile: bold flowing forms, balanced asymmetry and layered graphic movement.',
+    heritage: 'Heritage North African textile: intricate symmetrical ornament, tile-like geometric repeat and refined artisan detail.',
 };
 
 const isValidSeed = (seed) => Number.isInteger(seed) && seed >= 0 && seed <= 2147483647;
@@ -39,7 +41,7 @@ export const normalizeArtworkOptions = ({ mode = 'full', style = 'sport', palett
         throw new ImageGenerationError('Choose full pattern or logo mode.', 400);
     }
     if (typeof style !== 'string' || !Object.hasOwn(textileStyles, style)) {
-        throw new ImageGenerationError('Choose sport, minimal, botanical, or abstract style.', 400);
+        throw new ImageGenerationError('Choose sport, minimal, botanical, abstract, or heritage style.', 400);
     }
     if (palette !== undefined && (!Array.isArray(palette) || palette.length < 2 || palette.length > 4
         || palette.some((color) => typeof color !== 'string' || !/^#[0-9a-f]{6}$/i.test(color)))) {
@@ -59,11 +61,18 @@ export const buildArtworkPrompt = (prompt, mode = 'full', { style = 'sport', pal
         return `Create a centered T-shirt print illustration, isolated on a plain white background, with bold clean outlines and generous margins. Artwork only: no T-shirt, clothing mockup, person, photograph of a product, or watermark. Design description: ${prompt}`;
     }
     const tradition = traditions[garment];
+    if (tradition) {
+        const colors = palette?.length
+            ? `Use only this coordinated palette: ${palette.join(', ')}.`
+            : 'Follow the described colors within the traditional palette.';
+        const direction = `${tradition} ${STAY_TRADITIONAL}`;
+        return `Professional flat seamless repeating textile pattern for a ${garmentNames[garment]}, edge-to-edge. ${direction} ${colors} Medium-scale motifs, deliberate breathing room, matching edges and crisp shapes. Artwork only: no T-shirt, clothing mockup, person, product photograph, fabric folds, lighting, shadows, logos, lettering, borders or watermark. Design description: ${prompt}`;
+    }
+    const subject = String(prompt).trim().replace(/[\s.!?]+$/, '');
     const colors = palette?.length
-        ? `Use only this coordinated palette: ${palette.join(', ')}.`
-        : tradition ? 'Follow the described colors within the traditional palette.' : 'Follow the described colors; keep the palette coordinated.';
-    const direction = tradition ? `${tradition} ${STAY_TRADITIONAL}` : textileStyles[style];
-    return `Professional flat seamless repeating textile pattern for a ${garmentNames[garment]}, edge-to-edge. ${direction} ${colors} Medium-scale motifs, deliberate breathing room, matching edges and crisp shapes. Artwork only: no T-shirt, clothing mockup, person, product photograph, fabric folds, lighting, shadows, logos, lettering, borders or watermark. Design description: ${prompt}`;
+        ? `Palette, background first: ${describePalette(palette)} (${palette.join(', ')}). Use only these colors.`
+        : 'Follow the described colors; keep the palette coordinated.';
+    return `${subject}. ${textileStyles[style]} ${colors} Flat 2D vector print, seamless repeating textile pattern for a ${garmentNames[garment]}, edge-to-edge, evenly distributed medium-scale motifs, crisp clean shapes, matching edges. Artwork only: no T-shirt, clothing mockup, person, product photograph, fabric folds, lighting, shadows, logos, lettering, borders or watermark.`;
 };
 
 const normalizeError = (error, authenticated) => {

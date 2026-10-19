@@ -61,7 +61,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
   return (
     <div className='filepicker-container'>
       {/* Upload Section */}
-      <div className='flex flex-col gap-2 pb-2.5 border-b border-white/20'>
+      <div className='flex flex-col gap-2 pb-2.5 border-b border-white/15'>
         <div className='flex items-center justify-between'>
           <label htmlFor='file-upload' className='filepicker-label'>
             Choose Image
@@ -76,10 +76,10 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
             <button
               type='button'
               onClick={() => (state.isLogoTexture = !state.isLogoTexture)}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition ${
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition ${
                 snap.isLogoTexture
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-white/40 text-gray-700'
+                  ? 'bg-emerald-500 text-white shadow-xs'
+                  : 'bg-slate-800 text-slate-300 border border-white/10'
               }`}
             >
               {snap.isLogoTexture ? 'Logo On' : 'Logo Off'}
@@ -87,8 +87,8 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
           )}
         </div>
 
-        <p className='text-gray-700 text-[11px] truncate'>
-          {file ? `📎 ${file.name}` : 'Default Three.js Logo loaded'}
+        <p className='text-slate-300 text-[11px] truncate'>
+          {file ? `📎 ${file.name}` : 'Default Designili Logo loaded'}
         </p>
 
         {file && (
@@ -98,14 +98,14 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                 title='Apply Logo'
                 type='filled'
                 handleClick={() => readFile('logo')}
-                customStyles='text-xs flex-1 py-1.5'
+                customStyles='text-xs flex-1 py-1.5 font-bold rounded-lg shadow-sm'
               />
             )}
             <CustomButtom
               title='Full Pattern'
               type='outline'
               handleClick={() => readFile('full')}
-              customStyles='text-xs flex-1 py-1.5'
+              customStyles='text-xs flex-1 py-1.5 font-semibold rounded-lg'
             />
           </div>
         )}
@@ -118,13 +118,13 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
           <button
             type='button'
             onClick={() => setShowDetails(!showDetails)}
-            className='w-full py-1.5 px-2.5 rounded-lg text-xs font-semibold bg-white/70 hover:bg-white text-gray-800 border border-gray-300/80 flex items-center justify-between transition shadow-xs'
+            className='w-full py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-100 border border-slate-700 flex items-center justify-between transition shadow-xs'
           >
             <span className='flex items-center gap-1.5'>
               <span>⚙️</span>
-              <span>{showDetails ? 'Hide Controls' : 'More Details (Move & Resize)'}</span>
+              <span>{showDetails ? 'Hide Controls' : 'Move & Resize Controls'}</span>
             </span>
-            <span className='text-[10px] text-gray-500 font-bold'>
+            <span className='text-[10px] text-slate-400 font-bold'>
               {showDetails ? '▲' : '▼'}
             </span>
           </button>
@@ -134,7 +134,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
             <div className='flex flex-col gap-2.5 pt-1 transition-all'>
               {/* Quick Presets */}
               <div>
-                <label className='text-[10px] font-bold uppercase text-gray-600 block mb-1'>
+                <label className='text-[10px] font-bold uppercase tracking-wider text-slate-300 block mb-1'>
                   Position Presets
                 </label>
                 <div className='grid grid-cols-2 gap-1'>
@@ -143,7 +143,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                       key={p.label}
                       type='button'
                       onClick={() => handleApplyPreset(p.pos)}
-                      className='px-1.5 py-1 text-[10px] font-semibold bg-white/70 hover:bg-white text-gray-800 rounded border border-gray-200 shadow-xs flex items-center gap-1 transition'
+                      className='px-2 py-1.5 text-[10px] font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-100 rounded-lg border border-slate-700 shadow-xs flex items-center gap-1 transition'
                     >
                       <span>{p.icon}</span>
                       <span className='truncate'>{p.label}</span>
@@ -155,8 +155,8 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
               {/* Interactive 2D Placement Pad */}
               <div>
                 <div className='flex items-center justify-between mb-1'>
-                  <label className='text-[10px] font-bold uppercase text-gray-600'>Placement Pad</label>
-                  <span className='text-[9px] text-indigo-600 font-semibold'>Click or drag dot</span>
+                  <label className='text-[10px] font-bold uppercase tracking-wider text-slate-300'>Placement Pad</label>
+                  <span className='text-[9px] text-violet-400 font-semibold'>Click or drag dot</span>
                 </div>
                 <div
                   ref={miniPadRef}
@@ -164,16 +164,16 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   onPointerMove={(e) => {
                     if (e.buttons === 1) handleMiniPadPointer(e);
                   }}
-                  className='relative w-full h-[76px] bg-gradient-to-b from-indigo-100/60 to-white/70 rounded-lg border border-indigo-200/80 cursor-crosshair overflow-hidden shadow-inner'
+                  className='relative w-full h-[76px] bg-slate-900 rounded-lg border border-slate-700 cursor-crosshair overflow-hidden shadow-inner'
                 >
-                  <div className='absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none'>
-                    <div className='w-full h-[1px] bg-indigo-900 border-dashed' />
-                    <div className='absolute h-full w-[1px] bg-indigo-900 border-dashed' />
+                  <div className='absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none'>
+                    <div className='w-full h-[1px] bg-slate-600 border-dashed' />
+                    <div className='absolute h-full w-[1px] bg-slate-600 border-dashed' />
                   </div>
-                  <div className='absolute top-1 left-1/2 -translate-x-1/2 text-[9px] font-bold text-indigo-400 select-none pointer-events-none'>
+                  <div className='absolute top-1 left-1/2 -translate-x-1/2 text-[9px] font-bold text-slate-500 select-none pointer-events-none'>
                     COLLAR
                   </div>
-                  <div className='absolute bottom-0.5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-indigo-400 select-none pointer-events-none'>
+                  <div className='absolute bottom-0.5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-slate-500 select-none pointer-events-none'>
                     HEM
                   </div>
 
@@ -184,7 +184,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                       top: `${percentY}%`,
                       transform: 'translate(-50%, -50%)',
                     }}
-                    className='absolute w-4 h-4 rounded-full bg-indigo-600 border-2 border-white shadow-md pointer-events-none flex items-center justify-center text-[7px] text-white font-bold'
+                    className='absolute w-4 h-4 rounded-full bg-violet-500 border-2 border-white shadow-md pointer-events-none flex items-center justify-center text-[7px] text-white font-bold'
                   >
                     LOGO
                   </div>
@@ -192,14 +192,14 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
               </div>
 
               {/* Directional Nudge Pad (D-Pad) */}
-              <div className='flex items-center justify-between bg-white/40 p-1.5 rounded-lg border border-white/60'>
-                <span className='text-[10px] font-bold uppercase text-gray-600'>Nudge</span>
+              <div className='flex items-center justify-between bg-slate-800/70 p-2 rounded-xl border border-white/10'>
+                <span className='text-[10px] font-bold uppercase tracking-wider text-slate-300'>Nudge</span>
                 <div className='grid grid-cols-3 gap-1 w-24'>
                   <div />
                   <button
                     type='button'
                     onClick={() => nudge(0, 0.02)}
-                    className='h-6 bg-white shadow-xs rounded flex items-center justify-center text-xs font-bold text-gray-700 hover:bg-indigo-50 active:scale-95'
+                    className='h-6 bg-slate-700 hover:bg-slate-600 text-white rounded flex items-center justify-center text-xs font-bold active:scale-95 transition'
                     title='Move Up'
                   >
                     ▲
@@ -208,7 +208,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   <button
                     type='button'
                     onClick={() => nudge(-0.02, 0)}
-                    className='h-6 bg-white shadow-xs rounded flex items-center justify-center text-xs font-bold text-gray-700 hover:bg-indigo-50 active:scale-95'
+                    className='h-6 bg-slate-700 hover:bg-slate-600 text-white rounded flex items-center justify-center text-xs font-bold active:scale-95 transition'
                     title='Move Left'
                   >
                     ◀
@@ -216,7 +216,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   <button
                     type='button'
                     onClick={() => handleApplyPreset([0, 0.04, 0.15])}
-                    className='h-6 bg-indigo-100 shadow-xs rounded flex items-center justify-center text-[9px] font-bold text-indigo-700 hover:bg-indigo-200'
+                    className='h-6 bg-violet-600 text-white rounded flex items-center justify-center text-[9px] font-bold hover:bg-violet-500 transition'
                     title='Center'
                   >
                     ●
@@ -224,7 +224,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   <button
                     type='button'
                     onClick={() => nudge(0.02, 0)}
-                    className='h-6 bg-white shadow-xs rounded flex items-center justify-center text-xs font-bold text-gray-700 hover:bg-indigo-50 active:scale-95'
+                    className='h-6 bg-slate-700 hover:bg-slate-600 text-white rounded flex items-center justify-center text-xs font-bold active:scale-95 transition'
                     title='Move Right'
                   >
                     ▶
@@ -233,7 +233,7 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   <button
                     type='button'
                     onClick={() => nudge(0, -0.02)}
-                    className='h-6 bg-white shadow-xs rounded flex items-center justify-center text-xs font-bold text-gray-700 hover:bg-indigo-50 active:scale-95'
+                    className='h-6 bg-slate-700 hover:bg-slate-600 text-white rounded flex items-center justify-center text-xs font-bold active:scale-95 transition'
                     title='Move Down'
                   >
                     ▼
@@ -245,8 +245,8 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
               {/* Size & Rotation Sliders */}
               <div className='flex flex-col gap-1.5'>
                 <div className='flex items-center justify-between'>
-                  <span className='text-[10px] font-bold text-gray-600'>Scale Size</span>
-                  <span className='text-[10px] font-mono text-gray-500'>
+                  <span className='text-[10px] font-bold text-slate-300'>Scale Size</span>
+                  <span className='text-[10px] font-mono text-slate-200'>
                     {Math.round(currentScale * 100)}%
                   </span>
                 </div>
@@ -257,12 +257,12 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   step='0.01'
                   value={currentScale}
                   onChange={(e) => (state.logoScale = Number(e.target.value))}
-                  className='w-full accent-indigo-600 h-1'
+                  className='w-full accent-violet-500 h-1'
                 />
 
                 <div className='flex items-center justify-between mt-1'>
-                  <span className='text-[10px] font-bold text-gray-600'>Angle Rotation</span>
-                  <span className='text-[10px] font-mono text-gray-500'>
+                  <span className='text-[10px] font-bold text-slate-300'>Angle Rotation</span>
+                  <span className='text-[10px] font-mono text-slate-200'>
                     {snap.logoRotation || 0}°
                   </span>
                 </div>
@@ -273,26 +273,26 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
                   step='2'
                   value={snap.logoRotation || 0}
                   onChange={(e) => (state.logoRotation = Number(e.target.value))}
-                  className='w-full accent-indigo-600 h-1'
+                  className='w-full accent-violet-500 h-1'
                 />
               </div>
 
               {/* Remove Logo Background option */}
-              <label className='flex items-center justify-between bg-white/40 p-2 rounded-lg border border-white/50 cursor-pointer'>
-                <span className='text-[10px] font-bold uppercase text-gray-700'>
+              <label className='flex items-center justify-between bg-slate-800/70 p-2.5 rounded-xl border border-white/10 cursor-pointer'>
+                <span className='text-[10px] font-bold uppercase tracking-wider text-slate-200'>
                   Remove Background
                 </span>
                 <input
                   type='checkbox'
                   checked={snap.removeLogoBackground}
                   onChange={(e) => (state.removeLogoBackground = e.target.checked)}
-                  className='rounded accent-indigo-600 cursor-pointer'
+                  className='rounded accent-violet-500 cursor-pointer'
                 />
               </label>
 
               {/* Direct 3D Canvas Drag Tip */}
-              <p className='text-[10px] text-gray-500 bg-white/50 p-1.5 rounded border border-white/60 leading-tight'>
-                ✨ <strong className='text-gray-700'>Live Drag:</strong> Click and drag the logo directly on the 3D t-shirt to position it anywhere!
+              <p className='text-[10px] text-slate-300 bg-slate-800/60 p-2 rounded-lg border border-white/10 leading-relaxed'>
+                💡 <strong className='text-white'>Live Drag:</strong> Click and drag the logo directly on the 3D garment to position it anywhere.
               </p>
             </div>
           )}

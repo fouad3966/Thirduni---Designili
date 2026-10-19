@@ -21,7 +21,11 @@ const ModelRotator = ({ children }) => {
     }
 
     const targetRotY = snap.shirtRotationY || 0;
-    easing.dampE(group.current.rotation, [0, targetRotY, 0], 0.22, delta);
+    if (snap.snapRotationInstant) {
+      group.current.rotation.y = targetRotY;
+    } else {
+      easing.dampE(group.current.rotation, [0, targetRotY, 0], 0.22, delta);
+    }
   });
 
   return <group ref={group}>{children}</group>;

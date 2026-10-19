@@ -21,32 +21,50 @@ const Home = () => {
         <AnimatePresence>
 
             {snap.intro && (
-                <motion.section className='home'{...slideAnimation('left')}>
+                <motion.section className='home' {...slideAnimation('left')}>
                     <motion.header {...slideAnimation("down")}>
-                        <img className='w-10 object-contain' src="./threejs.png" />
+                        <img className='w-11 h-11 sm:w-14 sm:h-14 object-contain drop-shadow' src="/logo designili no BG.png" alt="Designili" />
                     </motion.header>
 
-                    <motion.div className='home-content' {...headContainerAnimation} >
+                    <motion.div className='home-content' {...headContainerAnimation}>
                         <motion.div {...headTextAnimation}>
-                            <h1 className='head-text text-white'>
-                                Let's<br className='xl:block hidden' />Do it.
-                            </h1></motion.div>
-                        <motion.div {...headContentAnimation}
-                            className="flex flex-col gap-5">
-                            <p className='max-w-md font-normal text-grey-100 text-base'>
-                                create your unique and exclusive shirt with our brand-nex 3D
-                                customisation tool .<strong>Unleach your imagination </strong>
+                            <h1 className='head-text select-none'>
+                                <span className="text-white drop-shadow-md">Let's</span>
+                                <br className='xl:block hidden' />
+                                <span className="bg-gradient-to-r from-violet-400 via-indigo-300 to-amber-300 bg-clip-text text-transparent drop-shadow-md">
+                                    Do it.
+                                </span>
+                            </h1>
+                        </motion.div>
+
+                        <motion.div {...headContentAnimation} className="flex flex-col gap-5 sm:gap-6">
+                            <p className='max-w-xs sm:max-w-md md:max-w-lg font-normal text-slate-200 text-sm sm:text-base md:text-lg leading-relaxed drop-shadow'>
+                                Create your unique and exclusive shirt with our brand-new 3D
+                                customization tool. <strong className="font-semibold text-white">Unleash your imagination</strong>
                                 {" "}and define your own style.
                             </p>
+
                             <GarmentSelector />
-                            <div className="flex gap-3 w-fit">
-                            <CustomButtom
-                                type="filled"
-                                title="Customize it"
-                                customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap"
-                                handleClick={() => state.intro = false} />
-                            <CustomButtom type="filled" title="Wear it" customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap" handleClick={() => state.wearItOpen = true} disabled={Boolean(snap.generatingGarment)} />
-                            {gameUrl && <CustomButtom type="filled" title="Marketplace" customStyles="w-fit px-4 font-bold text-sm py-2.5 whitespace-nowrap" handleClick={() => window.open(gameUrl, '_blank', 'noopener')} />}
+
+                            <div className="flex flex-wrap gap-2.5 sm:gap-3.5 w-fit items-center pt-1 max-w-full">
+                                <CustomButtom
+                                    type="filled"
+                                    title="Customize it"
+                                    customStyles="w-fit px-4 sm:px-6 font-bold text-xs sm:text-sm md:text-base py-2.5 sm:py-3 whitespace-nowrap rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                    handleClick={() => state.intro = false} />
+                                <CustomButtom
+                                    type="filled"
+                                    title="Wear it"
+                                    customStyles="w-fit px-3.5 sm:px-5 font-bold text-xs sm:text-sm md:text-base py-2.5 sm:py-3 whitespace-nowrap rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                    handleClick={() => state.wearItOpen = true}
+                                    disabled={Boolean(snap.generatingGarment)} />
+                                {gameUrl && (
+                                    <CustomButtom
+                                        type="filled"
+                                        title="Marketplace"
+                                        customStyles="w-fit px-3.5 sm:px-5 font-bold text-xs sm:text-sm md:text-base py-2.5 sm:py-3 whitespace-nowrap rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                        handleClick={() => window.open(gameUrl, '_blank', 'noopener')} />
+                                )}
                             </div>
                         </motion.div>
                     </motion.div>

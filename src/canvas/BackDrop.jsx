@@ -5,6 +5,7 @@ const BackDrop = () => (
     temporal
     frames={60}
     alphaTest={0.85}
+    opacity={0.65}
     scale={10}
     rotation={[Math.PI / 2, 0, 0]}
     position={[0, 0, -0.22]}

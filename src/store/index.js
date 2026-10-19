@@ -10,7 +10,7 @@ const defaultDesign = garment => ({
   color: getGarment(garment).color,
   isLogoTexture: garment === 'tshirt',
   isFullTexture: false,
-  logoDecal: './threejs.png',
+  logoDecal: '/logo designili no BG.png',
   logoScale: 0.15,
   logoPosition: [0, 0.04, 0.15],
   logoRotation: 0,
@@ -56,6 +56,8 @@ const state = proxy({
   preview: params.has('preview'),
   garment: initialGarment,
   generatingGarment: null,
+  snapRotationInstant: false,
+  activeDesignId: null,
   ...defaultDesign(initialGarment),
   ...(showTiger && initialGarment === 'tshirt' ? {
     color: '#30343a', logoDecal: '/samples/tiger.webp', logoScale: [0.46, 0.46, 0.2],

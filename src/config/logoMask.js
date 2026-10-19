@@ -25,12 +25,47 @@ export const createLogoBackgroundMask = (texture) => {
     let head = 0;
     let tail = 0;
 
+    // Detect if border is predominantly dark/black or light/white by sampling corners
+    const corners = [
+      0,
+      (width - 1) * 4,
+      ((height - 1) * width) * 4,
+      ((height - 1) * width + width - 1) * 4
+    ];
+    let darkVotes = 0;
+    let lightVotes = 0;
+    for (const offset of corners) {
+      const a = pixels[offset + 3];
+      if (a === 0) continue;
+      const r = pixels[offset];
+      const g = pixels[offset + 1];
+      const b = pixels[offset + 2];
+      const min = Math.min(r, g, b);
+      const max = Math.max(r, g, b);
+      if (max <= 45 && max - min <= 20) darkVotes++;
+      if (min >= 220 && max - min <= 25) lightVotes++;
+    }
+    const isDarkBg = darkVotes >= 2;
+
     const enqueue = (index) => {
       if (background[index]) return;
       const offset = index * 4;
-      const min = Math.min(pixels[offset], pixels[offset + 1], pixels[offset + 2]);
-      const max = Math.max(pixels[offset], pixels[offset + 1], pixels[offset + 2]);
-      if (pixels[offset + 3] !== 0 && (min < 240 || max - min > 16)) return;
+      const a = pixels[offset + 3];
+      if (a === 0) {
+        background[index] = 1;
+        queue[tail++] = index;
+        return;
+      }
+      const r = pixels[offset];
+      const g = pixels[offset + 1];
+      const b = pixels[offset + 2];
+      const min = Math.min(r, g, b);
+      const max = Math.max(r, g, b);
+      if (isDarkBg) {
+        if (max > 45 || max - min > 20) return;
+      } else {
+        if (min < 235 || max - min > 20) return;
+      }
       background[index] = 1;
       queue[tail++] = index;
     };

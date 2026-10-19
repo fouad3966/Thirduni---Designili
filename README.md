@@ -218,25 +218,6 @@ For software engineers, system architects, and technical evaluators seeking:
 
 ---
 
-## 👥 Team Members & Leadership
-
-### **Fouad Rabahi** — Lead Full-Stack & 3D Systems Engineer
-- **GitHub**: [@Fouad396](https://github.com/Fouad396) • **Email**: [mf.rabahi@esi-sba.dz](mailto:mf.rabahi@esi-sba.dz)
-- **Primary Contributions & System Ownership**:
-  - **Full-Stack Architecture & Reactive State**: Engineered the core React + Vite application architecture and Valtio proxy state store (`src/store/index.js`), enabling smooth 60fps canvas rotations and zero-re-render decal updates.
-  - **3D Graphics & Decal Projection Pipeline**: Implemented Three.js / React Three Fiber PBR garment rendering, interactive touch/mouse orbit controls (`ModelRotator.jsx`), dynamic 2D offscreen canvas text decal rasterization (`textTexture.js`), and planar decal projection with automated background alpha cutout masking (`logoMask.js`).
-  - **Algerian Darja Cultural NLP Engine**: Co-designed and enriched the cultural dialect lexicon in [serveur/services/darja.js](file:///d:/ISI%20Projects/Thirduni%202/serveur/services/darja.js), building Arabizi phonetic skeleton matching (`get khal`, `k7al`), dialect marker extraction, and cultural motif synthesis (Zellige, Karakou, Tassili, Amazigh).
-  - **On-Device Computer Vision Virtual Try-On**: Integrated Google MediaPipe Pose Landmarker Lite via WebAssembly and SIMD inside a dedicated Web Worker (`pose.worker.js`), building real-time anatomical pose-fitting affine math (`fitPose.js`) for private, zero-cloud live camera try-on.
-  - **Luxury Atelier Dark UI/UX**: Designed and built the dark glassmorphic design system in [src/index.css](file:///d:/ISI%20Projects/Thirduni%202/src/index.css), vertical tool drawer reordering, active tab indicators, animated ambient lighting orbs, and CAD geometric background pattern.
-  - **Industrial Production Tech Pack Generator**: Built the automated multi-angle headless WebGL render engine and spec sheet exporter (`exportSpecSheet.js`) for garment factory manufacturing.
-
-### **Moncef Azzouz** — Project Collaborator & 3D Asset Contributor
-- **GitHub**: [@MoncefAzzouz](https://github.com/MoncefAzzouz)
-- **Primary Contributions**:
-  - 3D garment mesh curation, conversion scripts, and initial repository setup.
-
----
-
 ## 📜 Credits & Attributions
 
 - **3D Models**: Base T-Shirt (`shirt_baked.glb`), Hoodie (`garments/hoodie/model.glb`), Evening Dress (`garments/dress/model.glb`), and Suit (`garments/suit/model.glb`) licensed under Creative Commons Attribution (see [`public/garments/credits.html`](./public/garments/credits.html)).

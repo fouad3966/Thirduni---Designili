@@ -35,5 +35,6 @@ credentials.json
 promo-video/
 promo.mp4
 Screen Recording*.mov
-.tempmediaStorage/
+# Graphify generated knowledge graph
+graphify-out/
 

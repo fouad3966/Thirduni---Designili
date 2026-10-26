@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSnapshot } from 'valtio';
-import state, { setPlan } from '../store';
+import state, { setPlan, resetDailyQuota } from '../store';
 import { ALL_PLANS, MANDATORY_PAYMENT_NOTICE } from '../config/pricingPlans';
 
 const SubscriptionCheckoutModal = () => {
@@ -64,7 +64,7 @@ const SubscriptionCheckoutModal = () => {
 
       // Update global plan and generation quotas in store
       setPlan(plan.id);
-      state.generationsUsed = 0; // reset for the new plan tier
+      resetDailyQuota(); // reset for the new plan tier
     }, 1800);
   };
 

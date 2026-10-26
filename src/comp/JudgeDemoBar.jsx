@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSnapshot } from 'valtio';
-import state, { setPlan, openPricing, openOrderPrint } from '../store';
+import state, { setPlan, openPricing, openOrderPrint, resetDailyQuota } from '../store';
 import { UNIT_ECONOMICS, YEAR_1_MILESTONES } from '../config/pricingPlans';
 
 const PLAN_KEYS = [
@@ -147,10 +147,10 @@ const JudgeDemoBar = () => {
 
               {/* Quota reset tool */}
               <div className='flex items-center justify-between text-[10px] text-slate-400 pt-1'>
-                <span>Used Gens: <strong className='text-white'>{snap.generationsUsed}</strong></span>
+                <span>Used Gens Today: <strong className='text-white'>{snap.generationsUsed}</strong></span>
                 <button
                   type='button'
-                  onClick={() => (state.generationsUsed = 0)}
+                  onClick={() => resetDailyQuota()}
                   className='text-amber-400 hover:text-amber-300 font-bold underline'
                 >
                   Reset AI Quota to 0

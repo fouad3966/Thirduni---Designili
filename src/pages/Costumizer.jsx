@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import config from '../config/config'
-import state, { toggleFlip, selectGarment, openPricing, openOrderPrint } from '../store'
+import state, { toggleFlip, selectGarment, openPricing, openOrderPrint, syncDailyQuota } from '../store'
 import { getPlanQuota, ALL_PLANS } from '../config/pricingPlans'
+import { recordGenerationUsed } from '../config/dailyQuota'
 import CustomButtom from '../comp/CustomButtom'
 import { reader } from '../config/helpers'
 import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants'
@@ -41,6 +42,7 @@ const Costumizer = () => {
 
   const handleSubmit = async () => {
     if (generationRequest.current) return;
+    syncDailyQuota();
     const quota = getPlanQuota(state.currentPlan, state.billingCycle);
     if (quota !== Infinity && (state.generationsUsed || 0) >= quota) {
       openPricing(state.audienceTab || 'individuals');
@@ -148,7 +150,7 @@ const Costumizer = () => {
         isFullTexture: true,
         isLogoTexture: false,
       });
-      state.generationsUsed = (state.generationsUsed || 0) + 1;
+      state.generationsUsed = recordGenerationUsed();
       // Did the model use the colors the user asked for? If not, offer a one-click fix.
       generated.current = { image: generatedImage, palette: understood?.palette ?? null, matchedUrl: null };
       setColorMatch(understood?.palette

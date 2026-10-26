@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSnapshot } from 'valtio';
-import state, { openPricing } from '../store';
+import state, { openPricing, resetDailyQuota } from '../store';
 import { getPlanQuota, ALL_PLANS } from '../config/pricingPlans';
 import CustomButtom from './CustomButtom';
 
@@ -131,7 +131,7 @@ const AIPicker = ({
         <button
           type='button'
           onClick={() => openPricing(snap.audienceTab || 'individuals')}
-          title='View plan details & quotas'
+          title='View plan details & daily quotas'
           className={`px-2 py-0.5 rounded-full border text-[10px] font-semibold flex items-center gap-1 transition ${
             isExhausted
               ? 'bg-rose-500/20 border-rose-500/50 text-rose-300 animate-pulse'
@@ -141,28 +141,40 @@ const AIPicker = ({
           <span>{planConfig.badge}</span>
           <span className='text-slate-400'>•</span>
           <span className={isExhausted ? 'font-bold text-rose-200' : 'text-white'}>
-            {used}/{quota === Infinity ? '∞' : quota}
+            {used}/{quota === Infinity ? '∞' : quota} {snap.currentPlan === 'free' ? 'today' : ''}
           </span>
         </button>
       </div>
 
       {/* Quota Exhausted Warning Banner */}
       {isExhausted && (
-        <div className='mb-2 p-2.5 rounded-xl bg-gradient-to-r from-rose-950/80 to-amber-950/80 border border-rose-500/40 text-xs flex flex-col gap-1.5'>
+        <div className='mb-2 p-2.5 rounded-xl bg-gradient-to-r from-rose-950/85 to-amber-950/85 border border-rose-500/40 text-xs flex flex-col gap-1.5 shadow-md'>
           <div className='flex items-center justify-between text-rose-300 font-bold text-[11px]'>
-            <span>⚠️ Generation Quota Reached</span>
-            <span className='text-[10px] text-slate-300'>{used} / {quota} used</span>
+            <span>⚠️ Daily Generation Quota Reached</span>
+            <span className='text-[10px] text-slate-300'>{used} / {quota} used today</span>
           </div>
           <p className='text-slate-200 text-[11px] leading-snug'>
-            You have used all AI generations for your {planConfig.name} plan. Upgrade to get up to 600 generations per month.
+            {snap.currentPlan === 'free'
+              ? 'Free prototype trial includes 3 generations per day. Your quota automatically resets every night at midnight!'
+              : `You have reached your limit of ${quota} generations.`}
           </p>
-          <button
-            type='button'
-            onClick={() => openPricing(snap.audienceTab || 'individuals')}
-            className='mt-0.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-[11px] shadow-sm transition'
-          >
-            Upgrade Plan Now →
-          </button>
+          <div className='flex items-center gap-2 mt-1'>
+            <button
+              type='button'
+              onClick={() => openPricing(snap.audienceTab || 'individuals')}
+              className='flex-1 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-[11px] shadow-sm transition text-center'
+            >
+              Upgrade Plan →
+            </button>
+            <button
+              type='button'
+              onClick={() => resetDailyQuota()}
+              title='Reset daily quota now for prototype testing'
+              className='px-2.5 py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/40 border border-amber-400/50 text-amber-200 font-bold text-[11px] transition flex items-center gap-1'
+            >
+              <span>🔄</span> Reset Demo
+            </button>
+          </div>
         </div>
       )}
 

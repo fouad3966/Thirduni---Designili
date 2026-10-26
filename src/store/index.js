@@ -1,5 +1,6 @@
 import { proxy } from 'valtio';
 import { getGarment, isGarment } from '../config/garments/catalog';
+import { getDailyGenerationsUsed, resetDailyGenerations } from '../config/dailyQuota';
 
 const params = new URLSearchParams(window.location.search);
 const showTiger = params.get('design') === 'tiger' || params.get('preview') === 'tiger';
@@ -72,7 +73,7 @@ const state = proxy({
 
   // Active Subscription & Usage Quota State
   currentPlan: 'free', // 'free' | 'pro' | 'studio' | 'business' | 'business_plus'
-  generationsUsed: 1, // Tracks AI prompts / regenerations consumed
+  generationsUsed: getDailyGenerationsUsed(), // Daily tracked AI generations (resets automatically at midnight)
   brandKit: {
     companyName: 'Atlas Apparel DZ',
     savedLogos: ['/logo designili no BG.png'],
@@ -103,6 +104,16 @@ const state = proxy({
     ordersHistory: [],
   },
 });
+
+export function resetDailyQuota() {
+  resetDailyGenerations();
+  state.generationsUsed = 0;
+}
+
+export function syncDailyQuota() {
+  state.generationsUsed = getDailyGenerationsUsed();
+  return state.generationsUsed;
+}
 
 export function setPlan(planId) {
   state.currentPlan = planId;

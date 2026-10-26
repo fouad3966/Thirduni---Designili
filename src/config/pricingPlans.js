@@ -38,11 +38,12 @@ export const INDIVIDUAL_PLANS = {
     generations: {
       monthly: 3,
       annual: 3,
-      isTotal: true,
-      label: '3 AI generations total',
+      isTotal: false,
+      isDaily: true,
+      label: '3 AI generations / day',
     },
     features: [
-      { text: '3 AI generations total', included: true },
+      { text: '3 AI generations / day (Resets automatically every day)', included: true },
       { text: 'Browse community stores & 3D designs', included: true },
       { text: 'Unlimited 3D rotation & color styling', included: true },
       { text: 'Live AR "Wear It" Camera try-on', included: false, lockedNotice: 'Unlocked on Pro ($9 / 1,200 DA)' },

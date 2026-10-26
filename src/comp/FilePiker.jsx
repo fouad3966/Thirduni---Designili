@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
-import state from '../store';
+import state, { openPricing } from '../store';
 import CustomButtom from './CustomButtom';
 import { POSITION_PRESETS } from '../config/textTexture';
 
@@ -107,6 +107,59 @@ const FilePiker = ({ file, setFile, readFile, supportsLogo = true }) => {
               handleClick={() => readFile('full')}
               customStyles='text-xs flex-1 py-1.5 font-semibold rounded-lg'
             />
+          </div>
+        )}
+      </div>
+
+      {/* Brand Kit Saved Logos Section */}
+      <div className='py-2.5 border-b border-white/10 flex flex-col gap-1.5'>
+        <div className='flex items-center justify-between'>
+          <span className='text-[10px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1'>
+            <span>🏢</span>
+            <span>Brand Kit Logos</span>
+          </span>
+          {['business', 'business_plus'].includes(snap.currentPlan) ? (
+            <span className='text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'>
+              Unlocked
+            </span>
+          ) : (
+            <span className='text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-0.5'>
+              <span>🔒</span>
+              <span>Business</span>
+            </span>
+          )}
+        </div>
+
+        {['business', 'business_plus'].includes(snap.currentPlan) ? (
+          <div className='flex items-center gap-2 pt-1'>
+            {(snap.brandKit?.savedLogos || []).map((logo) => (
+              <button
+                key={logo.id}
+                type='button'
+                onClick={() => {
+                  state.logoDecal = logo.url;
+                  state.isLogoTexture = true;
+                }}
+                className='px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center gap-1.5 text-xs text-white transition active:scale-95'
+                title={`Apply ${logo.name}`}
+              >
+                <span>🏷️</span>
+                <span>{logo.name}</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className='bg-slate-900/60 p-2 rounded-xl border border-white/5 flex flex-col gap-1'>
+            <p className='text-[10px] text-slate-400'>
+              Store high-res company logos in a shared team repository.
+            </p>
+            <button
+              type='button'
+              onClick={() => openPricing('companies')}
+              className='text-left text-[10px] text-violet-300 font-bold hover:text-violet-200 transition'
+            >
+              Unlock on Business Plan ($39) →
+            </button>
           </div>
         )}
       </div>

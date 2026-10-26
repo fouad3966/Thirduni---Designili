@@ -64,7 +64,72 @@ const state = proxy({
     logoPosition: [0, -0.035, 0.15], removeLogoBackground: true,
   } : {}),
   ...(showFabric ? { isLogoTexture: false, isFullTexture: true, useTrim: true } : {}),
+
+  // Currency & Billing State (Official rate: 1 USD = 134 DA, October 2026)
+  currency: 'DA', // 'DA' | 'USD' | 'BOTH'
+  billingCycle: 'monthly', // 'monthly' | 'annual'
+  audienceTab: 'individuals', // 'individuals' | 'companies'
+
+  // Active Subscription & Usage Quota State
+  currentPlan: 'free', // 'free' | 'pro' | 'studio' | 'business' | 'business_plus'
+  generationsUsed: 1, // Tracks AI prompts / regenerations consumed
+  brandKit: {
+    companyName: 'Atlas Apparel DZ',
+    savedLogos: ['/logo designili no BG.png'],
+    brandColors: ['#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#3b82f6', '#ec4899'],
+  },
+
+  // UI Modal Triggers
+  pricingModalOpen: false,
+  checkoutModalOpen: false,
+  selectedPlanForCheckout: null, // plan key when opening subscription checkout
+  orderModalOpen: false,
+  orderTrackingOpen: false,
+  judgeDemoBarOpen: true, // Sandbox tier switcher bar
+
+  // Active Payment & Order Prototype State
+  selectedPaymentMethod: 'edahabia', // 'edahabia' | 'cib' | 'mastercard'
+  currentOrder: {
+    garment: 'tshirt',
+    size: 'L',
+    bulkSizes: { XS: 0, S: 10, M: 20, L: 20, XL: 10, XXL: 0 },
+    isBulk: false,
+    quantity: 1,
+    wilaya: '31 - Oran',
+    address: '12 Rue Larbi Ben M\'hidi, Oran',
+    selectedShopId: 'oran-print-hub',
+    paymentType: 'cod', // Cash on Delivery (paid to print shop, not platform)
+    status: 'received', // 'received' | 'printing' | 'shipped' | 'delivered'
+    ordersHistory: [],
+  },
 });
+
+export function setPlan(planId) {
+  state.currentPlan = planId;
+}
+
+export function openPricing(audience = 'individuals') {
+  state.audienceTab = audience;
+  state.pricingModalOpen = true;
+}
+
+export function openCheckout(planId) {
+  state.selectedPlanForCheckout = planId;
+  state.pricingModalOpen = false;
+  state.checkoutModalOpen = true;
+}
+
+export function openOrderPrint() {
+  state.currentOrder.garment = state.garment;
+  state.orderModalOpen = true;
+}
+
+export function simulateNextOrderStatus() {
+  const flow = ['received', 'printing', 'shipped', 'delivered'];
+  const currentIdx = flow.indexOf(state.currentOrder.status);
+  const nextIdx = (currentIdx + 1) % flow.length;
+  state.currentOrder.status = flow[nextIdx];
+}
 
 export function toggleFlip() {
   state.autoRotate = false;

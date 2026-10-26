@@ -10,7 +10,7 @@ import {
 import CustomButtom from '../comp/CustomButtom'
 import config from '../config/config'
 import GarmentSelector from '../comp/GarmentSelector'
-import state from "../store/index"
+import state, { openPricing } from "../store/index"
 
 // Where the Marketplace button goes: the game's street (see config.js).
 const { gameUrl } = config[import.meta.env.DEV ? 'development' : 'production'];
@@ -22,8 +22,16 @@ const Home = () => {
 
             {snap.intro && (
                 <motion.section className='home' {...slideAnimation('left')}>
-                    <motion.header {...slideAnimation("down")}>
+                    <motion.header {...slideAnimation("down")} className="flex items-center justify-between w-full max-w-7xl pointer-events-auto">
                         <img className='w-11 h-11 sm:w-14 sm:h-14 object-contain drop-shadow' src="/logo designili no BG.png" alt="Designili" />
+                        <button
+                            type="button"
+                            onClick={() => openPricing('individuals')}
+                            className="px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-900/80 border border-violet-500/40 hover:border-violet-400 text-xs sm:text-sm text-violet-200 hover:text-white font-bold backdrop-blur-md transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        >
+                            <span>💎</span>
+                            <span>Pricing & Plans</span>
+                        </button>
                     </motion.header>
 
                     <motion.div className='home-content' {...headContainerAnimation}>
@@ -58,13 +66,11 @@ const Home = () => {
                                     customStyles="w-fit px-3.5 sm:px-5 font-bold text-xs sm:text-sm md:text-base py-2.5 sm:py-3 whitespace-nowrap rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
                                     handleClick={() => state.wearItOpen = true}
                                     disabled={Boolean(snap.generatingGarment)} />
-                                {gameUrl && (
-                                    <CustomButtom
-                                        type="filled"
-                                        title="Marketplace"
-                                        customStyles="w-fit px-3.5 sm:px-5 font-bold text-xs sm:text-sm md:text-base py-2.5 sm:py-3 whitespace-nowrap rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
-                                        handleClick={() => window.open(gameUrl, '_blank', 'noopener')} />
-                                )}
+                                <CustomButtom
+                                    type="filled"
+                                    title="Marketplace"
+                                    customStyles="w-fit px-3.5 sm:px-5 font-bold text-xs sm:text-sm md:text-base py-2.5 sm:py-3 whitespace-nowrap rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                    handleClick={() => window.open(gameUrl || 'https://atelier-city.vercel.app/street.html', '_blank', 'noopener')} />
                             </div>
                         </motion.div>
                     </motion.div>

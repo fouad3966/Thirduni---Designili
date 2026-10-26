@@ -15,12 +15,12 @@ const config = {
   development: {
     backendUrl: developmentUrl,
     nlpUrl: nlpUrlFor(developmentUrl),
-    gameUrl: gameUrl || "http://localhost:8792/street.html",
+    gameUrl: gameUrl || "https://atelier-city.vercel.app/street.html",
   },
   production: {
     backendUrl: productionUrl,
     nlpUrl: nlpUrlFor(productionUrl),
-    gameUrl: gameUrl || "",
+    gameUrl: gameUrl || "https://atelier-city.vercel.app/street.html",
   },
 };
 

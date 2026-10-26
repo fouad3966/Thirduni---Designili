@@ -136,15 +136,32 @@ html {
 }
 
 .home {
-  @apply w-fit max-w-full xl:h-full flex xl:justify-between justify-start items-start flex-col xl:py-10 xl:px-28 lg:px-16 md:px-12 sm:p-8 p-5 max-xl:gap-6 absolute z-10 pointer-events-auto;
+  @apply w-full h-full flex xl:justify-between justify-start items-start flex-col xl:py-10 xl:px-28 lg:px-16 md:px-12 sm:p-8 p-5 max-xl:gap-6 absolute inset-0 z-10 pointer-events-none;
   max-height: 100vh;
   max-height: 100dvh;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
+.home::-webkit-scrollbar {
+  width: 6px;
+}
+
+.home::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.home::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+
+.home::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
 .home-content {
-  @apply flex-1 xl:justify-center justify-start flex flex-col gap-6 sm:gap-8 max-w-full;
+  @apply flex-1 xl:justify-center justify-start flex flex-col gap-6 sm:gap-8 max-w-xl pointer-events-auto;
 }
 
 .head-text {

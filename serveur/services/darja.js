@@ -101,7 +101,7 @@ const STYLE_WORDS = [
 // Algerian / North African visual vocabulary -> English description FLUX understands.
 // heritage: true marks cultural ornament that implies the "heritage" textile style.
 const MOTIFS = [
-    { key: 'cat', phrase: 'cat illustration', dz: ['get', 'gatt', 'gatta', 'gattous', 'gatous', 'gattoussa', '9at', 'qett', 'qatta', 'qitt', 'قط', 'قطة', 'قطوس', 'قطوسة', 'ڨط', 'ڨطة'], intl: ['cat', 'cats', 'chat', 'chats', 'chaton'] },
+    { key: 'cat', phrase: 'cat illustration', dz: ['gat', 'get', 'gatt', 'gatta', 'gattous', 'gatous', 'gattoussa', '9at', 'qat', 'qett', 'qatta', 'qitt', 'قط', 'قطة', 'قطوس', 'قطوسة', 'ڨط', 'ڨطة'], intl: ['cat', 'cats', 'chat', 'chats', 'chaton'] },
     { key: 'dog', phrase: 'dog illustration', dz: ['kelb', 'kalb', 'kleb', 'kalba', 'كلب', 'كلبة', 'كلاب'], intl: ['dog', 'dogs', 'chien', 'chiens'] },
     { key: 'tiger', phrase: 'fierce tiger graphic', dz: ['nemr', 'nmer', 'nimer', 'nimr', 'فهد', 'نمر'], intl: ['tiger', 'tigre', 'panther', 'panthere', 'leopard'] },
     { key: 'bird', phrase: 'stylized soaring birds', dz: ['froukh', 'ferkh', 'tayr', 'teyr', 'tyour', 'tair', 'طير', 'طيور', 'فرخ'], intl: ['bird', 'birds', 'oiseau', 'oiseaux'] },
@@ -132,7 +132,7 @@ const MOTIFS = [
     { key: 'eagle', phrase: 'soaring eagles', dz: ['nsar', 'nesr', 'نسر'], intl: ['aigle', 'eagle'] },
     { key: 'lion', phrase: 'majestic lions', dz: ['sba3', 'asad', 'اسد', 'سبع'], intl: ['lion'] },
     { key: 'stripes', phrase: 'bold stripes', dz: ['khotout', 'khtout', 'khtot', 'khoutout', 'خطوط'], intl: ['stripes', 'stripe', 'rayures', 'rayure', 'raye', 'lignes'] },
-    { key: 'dots', phrase: 'evenly spaced polka dots', dz: ['nokat', 'no9at', 'nokta', 'nogat', 'نقاط', 'نقط'], intl: ['dots', 'pois', 'polka'] },
+    { key: 'dots', phrase: 'evenly spaced polka dots', dz: ['mna9et', 'mnaqet', 'mneqet', 'mna9at', 'men9et', 'منقط', 'منقطة', 'nokat', 'no9at', 'nokta', 'nogat', 'نقاط', 'نقط'], intl: ['dots', 'pois', 'polka', 'spotted'] },
     { key: 'checks', phrase: 'bold checkered squares', dz: ['moraba3at', 'murabaat', 'مربعات'], intl: ['carreaux', 'checks', 'checkered', 'damier', 'plaid', 'tartan'] },
     { key: 'circles', phrase: 'interlocking circles', dz: ['dawair', 'dwair', 'دوائر'], intl: ['cercles', 'circles', 'ronds'] },
     { key: 'mandala', phrase: 'sacred geometric mandala rosette pattern', dz: ['mandala', 'rosetta', 'دائرة زخرفية'], intl: ['mandala', 'rosette'] },

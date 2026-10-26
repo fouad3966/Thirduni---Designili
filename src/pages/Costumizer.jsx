@@ -20,6 +20,7 @@ import { addDesignToHistory } from '../config/designHistory'
 import ExportModal from '../comp/ExportModal'
 import { hasArabic, ARABIC_DEFAULT_FONT } from '../config/textTexture'
 import { analyzePaletteMatch, matchImageToPalette } from '../config/palette'
+import { understandPrompt, toPublicBrief } from '../config/darja/darja'
 
 const Costumizer = () => {
   const snap = useSnapshot(state);
@@ -61,28 +62,48 @@ const Costumizer = () => {
       let photoBase64 = null;
       let understood = null;
 
+      // 1. Immediately understand Darja / Arabic / English prompt
+      try {
+        const brief = await understandPrompt(trimmedPrompt);
+        understood = toPublicBrief(brief);
+        setInterpretation(understood);
+        if (understood?.garment && understood.garment !== state.garment) {
+          state.generatingGarment = null;
+          selectGarment(understood.garment);
+        }
+      } catch (err) {
+        console.warn('Darja understanding error:', err);
+      }
+
+      const effectivePrompt = understood?.englishPrompt || trimmedPrompt;
+      const targetGarment = understood?.garment || state.garment;
+
+      // 2. Try configured backend first
       try {
         const response = await fetch(config[import.meta.env.DEV ? 'development' : 'production'].backendUrl, {
           method: 'POST',
           signal: controller.signal,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: trimmedPrompt, mode: 'full', style: 'auto', garment: state.garment }),
+          body: JSON.stringify({ prompt: effectivePrompt, mode: 'full', style: 'auto', garment: targetGarment }),
         });
         if (response.ok) {
           const data = await response.json().catch(() => null);
           if (data?.photo) {
             mimeType = data?.mimeType ?? 'image/png';
             photoBase64 = data.photo;
-            understood = data?.interpretation && data.interpretation.source !== 'passthrough' ? data.interpretation : null;
+            if (data?.interpretation && data.interpretation.source !== 'passthrough') {
+              understood = data.interpretation;
+              setInterpretation(understood);
+            }
           }
         }
       } catch (backendErr) {
         console.warn('Backend endpoint unavailable, falling back to direct AI generation:', backendErr);
       }
 
-      // Resilient fallback: Direct AI generation if backend is unavailable or returns 405/404
+      // 3. Resilient fallback: Direct AI generation using the translated English prompt
       if (!photoBase64) {
-        const enhancedPrompt = `${trimmedPrompt}, modern textile surface print pattern for ${state.garment}, edge to edge seamless artwork, high fashion aesthetic, vibrant colors, 4k`;
+        const enhancedPrompt = `${effectivePrompt}, seamless repeating textile surface print pattern for ${targetGarment}, high fashion luxury aesthetic, edge-to-edge 2D flat artwork, vibrant colors, 4k`;
         const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
         const pollRes = await fetch(pollUrl, { signal: controller.signal });
         if (!pollRes.ok) {
@@ -113,12 +134,6 @@ const Costumizer = () => {
         throw new Error('The generated image could not be opened. Please try again.');
       }
       if (controller.signal.aborted) throw new DOMException('Generation timed out', 'AbortError');
-      setInterpretation(understood);
-      // The prompt named another garment ("bghit hoodie ..."): switch before applying the design.
-      if (understood?.garment && understood.garment !== state.garment) {
-        state.generatingGarment = null; // selectGarment refuses to switch while a generation is flagged
-        selectGarment(understood.garment);
-      }
       state.patternScale = 1;
       state.patternRotation = 0;
       state.patternOffsetX = 0;
@@ -162,26 +177,25 @@ const Costumizer = () => {
     }
   };
 
-  // Cheap "what did you understand?" check (no image generation, no GPU quota).
+  // Instant Darja understanding check
   const handlePreview = async () => {
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt || previewing) return;
     setPreviewing(true);
     setGenerationError('');
     try {
-      const response = await fetch(config[import.meta.env.DEV ? 'development' : 'production'].nlpUrl, {
-        method: 'POST',
-        signal: AbortSignal.timeout(10000),
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: trimmedPrompt }),
-      });
-      if (response.ok) {
-        const data = await response.json().catch(() => null);
-        setInterpretation(data?.interpretation ?? null);
-        return;
+      // 1. Direct local Darja translation engine
+      const brief = await understandPrompt(trimmedPrompt);
+      const publicBrief = toPublicBrief(brief);
+      setInterpretation(publicBrief);
+
+      // If the prompt specifies another garment ("bghit hoodie..."), switch to it
+      if (publicBrief?.garment && publicBrief.garment !== state.garment) {
+        selectGarment(publicBrief.garment);
       }
-    } catch (_) {
-      // Fallback: heuristic interpretation if backend is offline
+    } catch (error) {
+      console.warn('Darja preview error:', error);
+      setGenerationError('Could not analyze prompt. Please try again.');
     } finally {
       setPreviewing(false);
     }

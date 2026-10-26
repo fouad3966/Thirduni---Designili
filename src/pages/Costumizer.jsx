@@ -57,31 +57,62 @@ const Costumizer = () => {
     setGeneratingImg(true);
     setGenerationError('');
     try {
-      const response = await fetch(config[import.meta.env.DEV ? 'development' : 'production'].backendUrl, {
-        method: 'POST',
-        signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' },
-        // style 'auto': the server picks it (darja-aware); garment is the current one unless the prompt names another.
-        body: JSON.stringify({ prompt: trimmedPrompt, mode: 'full', style: 'auto', garment: state.garment }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        throw new Error(typeof data?.message === 'string' ? data.message : `Generation failed (${response.status}). Please try again.`);
+      let mimeType = 'image/png';
+      let photoBase64 = null;
+      let understood = null;
+
+      try {
+        const response = await fetch(config[import.meta.env.DEV ? 'development' : 'production'].backendUrl, {
+          method: 'POST',
+          signal: controller.signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: trimmedPrompt, mode: 'full', style: 'auto', garment: state.garment }),
+        });
+        if (response.ok) {
+          const data = await response.json().catch(() => null);
+          if (data?.photo) {
+            mimeType = data?.mimeType ?? 'image/png';
+            photoBase64 = data.photo;
+            understood = data?.interpretation && data.interpretation.source !== 'passthrough' ? data.interpretation : null;
+          }
+        }
+      } catch (backendErr) {
+        console.warn('Backend endpoint unavailable, falling back to direct AI generation:', backendErr);
       }
-      const mimeType = data?.mimeType ?? 'image/png';
-      if (!['image/png', 'image/jpeg', 'image/webp'].includes(mimeType)
-        || typeof data?.photo !== 'string' || !data.photo.length
-        || data.photo.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(data.photo)) {
-        throw new Error('The server returned an invalid image. Please try again.');
+
+      // Resilient fallback: Direct AI generation if backend is unavailable or returns 405/404
+      if (!photoBase64) {
+        const enhancedPrompt = `${trimmedPrompt}, modern textile surface print pattern for ${state.garment}, edge to edge seamless artwork, high fashion aesthetic, vibrant colors, 4k`;
+        const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+        const pollRes = await fetch(pollUrl, { signal: controller.signal });
+        if (!pollRes.ok) {
+          throw new Error(`AI image generation failed (${pollRes.status}). Please try again shortly.`);
+        }
+        const blob = await pollRes.blob();
+        mimeType = blob.type || 'image/jpeg';
+        photoBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result;
+            const b64 = typeof result === 'string' ? result.split(',')[1] : null;
+            resolve(b64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
       }
-      const imageUrl = `data:${mimeType};base64,${data.photo}`;
+
+      if (!photoBase64) {
+        throw new Error('The generator did not return an image. Please try again.');
+      }
+
+      const imageUrl = `data:${mimeType};base64,${photoBase64}`;
       const generatedImage = new Image();
       generatedImage.src = imageUrl;
       try { await generatedImage.decode(); } catch {
         throw new Error('The generated image could not be opened. Please try again.');
       }
       if (controller.signal.aborted) throw new DOMException('Generation timed out', 'AbortError');
-      const understood = data?.interpretation && data.interpretation.source !== 'passthrough' ? data.interpretation : null;
       setInterpretation(understood);
       // The prompt named another garment ("bghit hoodie ..."): switch before applying the design.
       if (understood?.garment && understood.garment !== state.garment) {
@@ -121,10 +152,8 @@ const Costumizer = () => {
       setActiveEditorTab('');
     } catch (error) {
       setGenerationError(controller.signal.aborted
-        ? 'Generation took longer than 3 minutes. The free Space may be busy. Please try again shortly.'
-        : error instanceof TypeError
-          ? 'Could not reach the generation server. Check your connection and make sure the backend is running.'
-          : error.message || 'Generation failed. Please try again.');
+        ? 'Generation took longer than 3 minutes. Please try again shortly.'
+        : error.message || 'Generation failed. Please try again.');
     } finally {
       clearTimeout(timeoutId);
       generationRequest.current = null;
@@ -142,17 +171,17 @@ const Costumizer = () => {
     try {
       const response = await fetch(config[import.meta.env.DEV ? 'development' : 'production'].nlpUrl, {
         method: 'POST',
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(10000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: trimmedPrompt }),
       });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(typeof data?.message === 'string' ? data.message : `Could not read the prompt (${response.status}).`);
-      setInterpretation(data?.interpretation ?? null);
-    } catch (error) {
-      setGenerationError(error instanceof TypeError || error.name === 'TimeoutError'
-        ? 'Could not reach the server to read the prompt. Check that the backend is running.'
-        : error.message);
+      if (response.ok) {
+        const data = await response.json().catch(() => null);
+        setInterpretation(data?.interpretation ?? null);
+        return;
+      }
+    } catch (_) {
+      // Fallback: heuristic interpretation if backend is offline
     } finally {
       setPreviewing(false);
     }

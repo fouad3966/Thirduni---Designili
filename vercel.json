@@ -1,5 +1,24 @@
 {
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: data: blob:;"
+        }
+      ]
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/api/v1/dalle",
+      "destination": "/api/dalle.js"
+    },
+    {
+      "source": "/api/v1/nlp/understand",
+      "destination": "/api/nlp.js"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

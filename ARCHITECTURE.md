@@ -12,7 +12,7 @@ To deliver a zero-install, 60 FPS experience on consumer laptops and mobile brow
 
 1. **Zero-Re-Render 3D State Synchronization:** High-frequency 3D mesh mutations (color interpolation, UV decal transforms, procedural fabric normal maps, and camera rigs) are driven by a reactive **Valtio** proxy store (`src/store/index.js`) read directly inside React Three Fiber's `useFrame` WebGL render loop—bypassing React virtual DOM reconciliation during active 3D manipulation.
 2. **Off-Main-Thread Computer Vision (AR Try-On):** Live webcam body tracking (`src/tryon/`) executes **Google MediaPipe Pose Landmarker Lite (WASM)** inside an isolated **Web Worker** (`pose.worker.js`), keeping the main UI and WebGL threads unblocked while maintaining 30+ FPS pose estimation and zero server video transmission.
-3. **Dual-Runtime Resilient AI & Cultural NLP Pipeline:** Natural language prompts in **Algerian Darija (Arabizi)**, **Arabic**, and **English** are parsed through a deterministic phonetic/lexicon intent engine (`src/config/darja/darja.js`, `/api/nlp.js`, and `/serveur/services/darja.js`) before dispatching to a multi-tier generative image pipeline (**FLUX.1-schnell** on Hugging Face ZeroGPU → **OpenAI DALL-E** → **Pollinations AI** zero-key fallback).
+3. **Dual-Runtime Resilient AI & Cultural NLP Pipeline:** Natural language prompts in **Algerian Darija (الدارجة)**, **Arabic**, and **English** are parsed through a deterministic phonetic/lexicon intent engine (`src/config/darja/darja.js`, `/api/nlp.js`, and `/serveur/services/darja.js`) before dispatching to a multi-tier generative image pipeline (**FLUX.1-schnell** on Hugging Face ZeroGPU → **OpenAI DALL-E** → **Pollinations AI** zero-key fallback).
 4. **Dual-Backend Cloud Parity:** Every API route is implemented in both **Vercel Serverless Functions** (`/api/`) for instant edge deployment and a standalone **Node.js + Express** microservice (`/serveur/`) for dedicated container hosting.
 
 ## 2. High-Level System Topology
@@ -91,9 +91,9 @@ The 3D studio is engineered on **Three.js (`0.165`)**, **React Three Fiber (`@re
    * `CameraRig.jsx` applies pointer-parallax damping (`easing.dampE`) and smooth zoom transitions.
    * `BackDrop.jsx` renders `<AccumulativeShadows>` and dual `<RandomizedLight>` rigs tuned to prevent highlight clipping on bright white or metallic gold decals.
 
-### 3.3 Algerian Darija (Arabizi) NLP & Multi-Tier AI Pipeline (`src/config/darja/`, `api/`, `serveur/`)
+### 3.3 Algerian Darija (الدارجة) NLP & Multi-Tier AI Pipeline (`src/config/darja/`, `api/`, `serveur/`)
 
-A core technical differentiator of Designili is its ability to understand **Algerian Darija written in Latin script (Arabizi)** alongside Arabic and English.
+A core technical differentiator of Designili is its ability to understand **Algerian Darija (الدارجة الجزائرية)** alongside Standard Arabic and English.
 
 ```mermaid
 sequenceDiagram
@@ -103,10 +103,10 @@ sequenceDiagram
     participant AI as Texture Synthesis (/api/v1/dalle)
     participant Store as Valtio Store (src/store/index.js)
 
-    User->>Quota: Submit Prompt ("dirli hoodie k7el fih rasma sahra b dhahbi")
+    User->>Quota: Submit Prompt ("ديرلي هودي كحل فيه رسمة صحراء بالذهبي")
     Quota->>Quota: Check Plan Allowance (Free=3, Pro=60/100, Studio=150, Business=300/600)
     Quota->>NLP: POST /api/nlp/understand { prompt }
-    NLP->>NLP: Tokenize Arabizi numerals (3, 7, 9) & match Darija lexicon
+    NLP->>NLP: Tokenize Arabic & Darija keywords (كحل, صحراء, ذهبي) & match lexicon
     NLP-->>User: Extracted Intent: { garment: "hoodie", color: "#111111", mode: "logo", enPrompt: "golden Saharan desert emblem..." }
     User->>Store: Apply immediate state (garment="hoodie", color="#111111")
     User->>AI: POST /api/v1/dalle { prompt: enPrompt }
@@ -116,7 +116,7 @@ sequenceDiagram
 ```
 
 * **Deterministic Cultural Lexicon (`src/config/darja/darja.js` & `serveur/services/darja.js`):**
-  * Handles Algerian Arabizi phonetic numerals (`3` = ع, `7` = ح, `9` = ق, `5` = خ) and orthographic variations (e.g., `k7el` / `khal` / `akhal` → `#111827` Jet Black; `zra9` / `zrag` → Royal Blue; `dhahbi` → Metallic Gold; `triko` → T-Shirt; `tricou b capuche` → Hoodie; `karakou` → Karakou).
+  * Handles Algerian Darija vocabulary and phonetic roots (e.g., كحل / أسود → `#111827` Jet Black; زرق / أزرق → Royal Blue; ذهبي / أصفر → Metallic Gold; تريكو → T-Shirt; هودي / تريكو بالكابيش → Hoodie; كراكو → Karakou; قفطان → Caftan; زليج → Zellige).
   * Extracts **4 structured dimensions** from a single conversational sentence:
     1. **Target Garment Mesh** (`tshirt`, `hoodie`, `dress`, `suit`, `caftan`, `karakou`)
     2. **Base Fabric & Trim Hex Colors** (`color`, `trimColor`)
@@ -178,6 +178,6 @@ To bridge creative design with physical manufacturing in Algeria (`Financial Pla
 | **ADR-002** | **Valtio Proxy State over Redux / Context** | Continuous color picker dragging and 3D decal scaling at 60Hz cause severe frame drops if routed through React component tree re-renders. | Adopted **Valtio** (`src/store/index.js`) so R3F's `useFrame` loop reads mutable proxy state directly at 60 FPS while UI panels subscribe selectively via `useSnapshot`. |
 | **ADR-003** | **Multi-Tier Resilient AI Synthesis** | Free GPU inference spaces (Hugging Face ZeroGPU) have variable queues that can time out during live hackathon judging. | Implemented a 3-tier cascading gateway (`/api/dalle.js`) that attempts **FLUX.1-schnell**, checks **OpenAI DALL-E**, and guarantees completion via **Pollinations AI**. |
 | **ADR-004** | **In-Browser WebAssembly MediaPipe Pose Tracking** | Server-side virtual try-on models (IDM-VTON / FitDiT) take 10–30 seconds per static photo, have non-commercial license limits, and incur high GPU costs. | Engineered client-side **MediaPipe Pose Landmarker Lite** in a **Web Worker** (`pose.worker.js`) with Kalman smoothing (`smoothFit.js`) for 30+ FPS live AR fitting at **$0.00 server cost per user**. |
-| **ADR-005** | **Deterministic Darija / Arabizi Cultural NLP Engine** | Algerian users naturally mix French, Arabic, and numbered Arabizi (`3`, `7`, `9`) when describing clothes, which confuses generic English image models. | Created a dual-runtime phonetic lexicon and intent parser (`src/config/darja/darja.js` & `/api/nlp.js`) that deterministically extracts garment type, hex colors, and placement while translating cultural motifs into high-precision diffusion prompts. |
+| **ADR-005** | **Deterministic Darija (الدارجة) Cultural NLP Engine** | Algerian users naturally mix French, Arabic, and colloquial Darija (الدارجة) when describing clothes, which confuses generic English image models. | Created a dual-runtime phonetic lexicon and intent parser (`src/config/darja/darja.js` & `/api/nlp.js`) that deterministically extracts garment type, hex colors, and placement while translating cultural motifs into high-precision diffusion prompts. |
 | **ADR-006** | **Dual Serverless (`/api`) & Express (`/serveur`) Parity** | Judges need a zero-cold-start live URL on Vercel, while enterprise/local deployments benefit from a stateful Node.js/Express + MongoDB backend. | Mirrored core AI and NLP handlers in both Vercel Serverless Functions (`/api/dalle.js`, `/api/nlp.js` via `vercel.json` rewrites) and the standalone Express server (`/serveur/`). |
 | **ADR-007** | **Two-Sided Print-Shop Commission & Tier-Gated Export** | Handling physical garment payments and shipping escrow directly creates heavy working-capital and logistics risk for an early-stage platform. | Separated revenue streams: subscriptions cover design tools (**Edahabia / CIB / Mastercard**), while garments and printing are paid via **Cash on Delivery** directly to partner print shops (who pay Designili a **15% monthly invoice commission**). Outside tech-pack exports (`PNG/SVG/PDF`) are gated to higher-priced **Studio** and **Business Plus** tiers to offset zero print commission. |

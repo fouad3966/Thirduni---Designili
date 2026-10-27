@@ -16,7 +16,7 @@ This section maps directly to the **8 official judging criteria** so evaluators 
 
 ### 2. Description: Problem, Solution & Target Audience (139 / 150 words max)
 
-In Algeria, aspiring creators and small clothing brands often have strong apparel ideas but lack the 3D design skills, software, or technical vocabulary to turn them into production-ready garments. Meanwhile, local printing and sewing workshops waste hours translating vague client sketches into printable files. Designili bridges both sides as an end-to-end AI 3D fashion studio and marketplace. Clients describe their vision in Algerian Darija (Arabizi) or English, and our AI generates custom graphics, colors, and textile patterns directly onto interactive 3D garments—from T-shirts and hoodies to Algerian caftans and karakous. Users preview fit live via our Wear It AR webcam try-on, explore community storefronts in the 3D Atelier City marketplace for inspiration, and send orders or factory-ready tech packs directly to verified partner print and sewing shops across 58 wilayas. Built for individual creators, emerging brands, and garment workshops.
+In Algeria, aspiring creators and small clothing brands often have strong apparel ideas but lack the 3D design skills, software, or technical vocabulary to turn them into production-ready garments. Meanwhile, local printing and sewing workshops waste hours translating vague client sketches into printable files. Designili bridges both sides as an end-to-end AI 3D fashion studio and marketplace. Clients describe their vision in Algerian Darija (بالدارجة الجزائرية) or English, and our AI generates custom graphics, colors, and textile patterns directly onto interactive 3D garments—from T-shirts and hoodies to Algerian caftans and karakous. Users preview fit live via our Wear It AR webcam try-on, explore community storefronts in the 3D Atelier City marketplace for inspiration, and send orders or factory-ready tech packs directly to verified partner print and sewing shops across 58 wilayas. Built for individual creators, emerging brands, and garment workshops.
 
 ### 3. Live Demo Link
 
@@ -34,14 +34,16 @@ In Algeria, aspiring creators and small clothing brands often have strong appare
 
 ### 6. Team and Roles
 
-*Replace the placeholders below with your team members' full names and their exact contributions:*
-
 | Team Member Full Name | Role | What They Built (One Honest Line) |
 | :--- | :--- | :--- |
-| `<!-- Full Name 1 -->` | Lead 3D & Frontend Engineer | Built the React Three Fiber 3D garment studio, PBR material system, decal/text projection, and Valtio state engine. |
-| `<!-- Full Name 2 -->` | AI, NLP & Backend Engineer | Built the Algerian Darija/Arabizi NLP parser, FLUX.1/Pollinations AI texture pipeline, and Express/Vercel serverless APIs. |
-| `<!-- Full Name 3 -->` | Computer Vision & Marketplace Engineer | Implemented the MediaPipe WebAssembly AR "Wear It" camera try-on and the interactive 3D Atelier City street marketplace. |
-| `<!-- Full Name 4 -->` | Product, Financial Model & Commercial UX | Designed the Algerian print-shop order flow, Edahabia/CIB subscription checkout, tech-pack exporter, and unit economics model. |
+| **Amani Hansali** | Project Lead, CTO & Product Architect | Led the product strategy, system architecture, and 12-month unit economics financial plan. |
+| **Mohamed Fouad Rabahi** | Lead Frontend & Full-Stack Engineer | Built the studio UI enhancements, Edahabia/CIB subscription checkout, Wilaya print-shop delivery flow, and Darija NLP refinements. |
+| **Abdelkader Abbes** | AI & Darija NLP Engineer | Developed the core Algerian Darija (الدارجة) intent parser (`darja.js`) and wired the generative AI prompt-to-texture pipeline. |
+| **Moncef Azzouz** | Computer Vision & 3D Marketplace Engineer | Implemented the MediaPipe WebAssembly "Wear It" AR camera try-on pipeline and 3D Atelier City marketplace integration. |
+| **Zina Guerda** | Color Palette & Preset Contributor | Curated traditional Algerian color swatches (`palette.js`) and assisted with default garment preset configurations. |
+| **Kassouar Fatima** | Darija Lexicon & Prompt Tester | Gathered everyday Algerian Darija clothing terms and tested prompt variations against the NLP dictionary. |
+| **Abdeldjalil Benchabne** | 3D Garments, Mockups & Print-Shop Contributor | Integrated the 3D garments and mockups, tested meshes, and researched local Algerian print-shop pricing benchmarks and Wilaya delivery estimates. |
+| **Milissa Temam** | QA Testing & Spec Sheet Reviewer | Tested 3D decal positioning across garment meshes and verified exported tech-pack spec sheets across browser viewports. |
 
 ### 7. Tech Stack & AI Tools Disclosure
 
@@ -54,7 +56,7 @@ Using AI is core to both our runtime product and our engineering workflow. Below
 | **3D Graphics & WebGL** | Three.js (`0.165`), React Three Fiber (`@react-three/fiber`), React Three Drei (`@react-three/drei`), `maath` |
 | **Reactive State Management** | Valtio (`1.13`) proxy-based state store with `localStorage` persistence |
 | **Computer Vision & AR Try-On** | Google MediaPipe Tasks Vision (`@mediapipe/tasks-vision` Pose Landmarker Lite in WebAssembly + Web Workers), HTML5 Canvas 2D occlusion & Kalman/EMA smoothing |
-| **Runtime AI & NLP Models** | **FLUX.1-schnell** (via Hugging Face ZeroGPU / `@gradio/client`), **Pollinations AI** (resilient serverless fallback), **OpenAI API** (`DALL-E` / GPT prompt enrichment), **Decart SDK**, **IDM-VTON / FitDiT** (Gradio virtual try-on route), and our **Custom Algerian Darija / Arabizi Rule & Lexicon NLP Engine** (`src/config/darja/darja.js`) |
+| **Runtime AI & NLP Models** | **FLUX.1-schnell** (via Hugging Face ZeroGPU / `@gradio/client`), **Pollinations AI** (resilient serverless fallback), **OpenAI API** (`DALL-E` / GPT prompt enrichment), **Decart SDK**, **IDM-VTON / FitDiT** (Gradio virtual try-on route), and our **Custom Algerian Darija (الدارجة) Rule & Lexicon NLP Engine** (`src/config/darja/darja.js`) |
 | **Backend & Cloud Hosting** | Vercel Serverless Functions (`/api/dalle.js`, `/api/nlp.js`), Node.js + Express (`/serveur`), MongoDB (`mongoose`), Cloudinary |
 | **AI Coding & Design Assistants** | Google Gemini (architecture planning, financial-to-UI prototyping, documentation refinement), GitHub Copilot / Cursor (code completion and refactoring) |
 
@@ -68,7 +70,7 @@ Over the next three months, we will transition Designili from a functional proto
 
 Across Algeria and emerging markets, custom apparel creation is broken for both sides of the market:
 
-1. **For Everyday Clients & Aspiring Creators:** Thousands of young people, students, event organizers, and emerging streetwear creators have vivid clothing concepts in mind. However, they cannot bring them to life because professional tools (CLO3D, Adobe Illustrator, Marvelous Designer) require steep technical expertise, high-end hardware, and English design terminology. Describing an idea in **Algerian Darija (Arabizi)** like *"dirli triko k7el fih rasma ta3 sahra b dhahbi"* does not work in standard international AI tools.
+1. **For Everyday Clients & Aspiring Creators:** Thousands of young people, students, event organizers, and emerging streetwear creators have vivid clothing concepts in mind. However, they cannot bring them to life because professional tools (CLO3D, Adobe Illustrator, Marvelous Designer) require steep technical expertise, high-end hardware, and English design terminology. Describing an idea in **Algerian Darija** like *"ديرلي تريكو كحل فيه رسمة تاع صحراء بالذهبي"* does not work in standard international AI tools.
 2. **For Local Printing & Sewing Workshops (Ateliers):** Algeria has a strong network of textile printers (DTG, screen printing, sublimation, embroidery) and sewing workshops across all 58 wilayas. Yet workshop owners spend an enormous amount of unbilled time acting as free graphic designers—back-and-forth messaging with clients over low-resolution screenshots, guessing garment measurements, and manually recreating print files.
 3. **Lack of Trust Before Ordering:** Clients hesitate to order custom garments online because static 2D mockups fail to show how a garment drapes in 3D or how it looks on their own body.
 
@@ -76,7 +78,7 @@ Across Algeria and emerging markets, custom apparel creation is broken for both 
 
 **Designili** sits squarely in the middle as an intelligent creative and commercial bridge between **clients who have ideas** and **printing/sewing companies that produce them**:
 
-* **Speak Darija or English, Get a 3D Garment:** Users type their idea naturally in **Algerian Darija (Arabizi)**, **Arabic**, or **English**. Our custom cultural NLP engine (`src/config/darja/darja.js` and `/api/nlp/understand`) parses garment types, Algerian color idioms (e.g., *k7el*, *zra9*, *bordeaux*, *dhahbi*), traditional motifs, and placement intents, then synthesizes high-resolution chest decals or seamless full-garment textures on a live 360° 3D mesh.
+* **Speak Darija or English, Get a 3D Garment:** Users type their idea naturally in **Algerian Darija (الدارجة الجزائرية)**, **Arabic**, or **English**. Our custom cultural NLP engine (`src/config/darja/darja.js` and `/api/nlp/understand`) parses garment types, Algerian color idioms (e.g., كحل, زرق, بوردو, ذهبي), traditional motifs, and placement intents, then synthesizes high-resolution chest decals or seamless full-garment textures on a live 360° 3D mesh.
 * **Culturally Grounded 3D Catalog:** Beyond standard T-shirts and hoodies, Designili natively supports 3D meshes for **Evening Dresses, Tailored Suits, Algerian Caftans, Traditional Karakous, and Footwear**.
 * **Try Before You Print ("Wear It" Live AR):** With one click, users activate their webcam. Our in-browser MediaPipe WebAssembly pose tracker maps their shoulders, torso, and hips at 30+ FPS—letting them physically move and see their custom garment fitted on their body with zero server latency.
 * **Community Inspiration in the 3D Atelier City Marketplace (`game/atelier-city`):** Users are not designing in isolation. They can enter an interactive 3D virtual shopping street to browse storefronts created by other designers, inspect community garments for inspiration, and order existing community designs.
@@ -164,7 +166,7 @@ Thirduni---Designili/
 │   │   ├── Tab.jsx             # Glassmorphic dock tab item
 │   │   └── CustomButtom.jsx    # Reusable themed action button
 │   ├── config/                 # Domain Logic, Darja Lexicon, Pricing & Spec Compilers
-│   │   ├── darja/darja.js      # Algerian Darija/Arabizi phonetic dictionary & intent parser
+│   │   ├── darja/darja.js      # Algerian Darija (الدارجة) phonetic dictionary & intent parser
 │   │   ├── garments/           # Per-garment 3D transform & material configurations
 │   │   ├── pricingPlans.js     # Full USD/DA tier specs, partner print shops & unit economics
 │   │   ├── dailyQuota.js       # LocalStorage AI generation quota manager & sandbox reset
@@ -239,7 +241,7 @@ npm start
 
 ### How Judges Can Test Every Feature in 60 Seconds
 
-1. **Test Darija or English AI Design:** Click **Customize It**, open the **AI Studio** tab on the left dock, and type a prompt in Algerian Darija (e.g., `"triko k7el fih rasma ta3 sahra b dhahbi"`) or English (`"cyberpunk geometric gold embroidery"`).
+1. **Test Darija or English AI Design:** Click **Customize It**, open the **AI Studio** tab on the left dock, and type a prompt in Algerian Darija (e.g., `"تريكو كحل فيه رسمة تاع صحراء بالذهبي"`) or English (`"cyberpunk geometric gold embroidery"`).
 2. **Switch Garments & Fabrics:** Use the bottom garment selector to switch between **T-Shirt, Hoodie, Dress, Suit, Caftan, and Karakou**, and customize colors, trims, and 3D text decals.
 3. **Test Live AR Try-On ("Wear It"):** Click **Wear It** in the top bar to project your customized 3D garment onto your live webcam feed using MediaPipe pose tracking.
 4. **Use the Judge Demo Bar:** Click the floating **Judge Demo Bar** pill to switch instantaneously between **Free, Pro, Studio, Business, and Business Plus** plans, test tier-gated features (like Tech Pack export and Company Brand Kits), view live **Unit Economics**, and walk through the **Edahabia / CIB Checkout** and **Wilaya Print-Shop Order Tracker** (`Received → Printing → Shipped → Delivered`).

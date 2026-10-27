@@ -1,276 +1,245 @@
-# DESIGNILI 3D STUDIO — Generative AI Fashion Engineering & 3D Customizer
+# Designili — AI 3D Fashion Studio, AR Try-On & Print-Shop Marketplace
 
-<div align="center">
+> **An AI 3D fashion platform connecting Algerian creators and brands with local print and sewing workshops.**
 
-<img src="./public/logo designili no BG.png" alt="Designili Logo" width="180" />
+**Live Demo:** [https://thirduni-designili.vercel.app](https://thirduni-designili.vercel.app)  
+**Repository:** [https://github.com/fouad3966/Thirduni---Designili](https://github.com/fouad3966/Thirduni---Designili)  
+**Architecture Docs:** See `ARCHITECTURE.md` in the root directory for full system specifications and ADRs.
 
-### *From Generative Textile Ideation to Real-Time 3D Simulation & Factory Production*
+## Hackathon Submission Checklist (8-Item Judge Guide)
 
-**An enterprise-grade, browser-native fashion engineering atelier uniting generative AI textiles, real-time 3D PBR garment draping, dynamic planar typography decals, Algerian Darja NLP understanding, on-device neural virtual try-on, and an automated Algerian print-shop commercial engine.**
+This section maps directly to the **8 official judging criteria** so evaluators can verify every requirement at a glance.
 
-[![Vercel Deployment](https://img.shields.io/badge/Deployment-Vercel_Serverless-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
-[![React](https://img.shields.io/badge/UI-React_18-20232a?style=for-the-badge&logo=react&logoColor=61dafb)](https://react.dev/)
-[![Three.js](https://img.shields.io/badge/3D_Engine-Three.js_/_R3F-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
-[![Vite](https://img.shields.io/badge/Bundler-Vite_5-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Node.js](https://img.shields.io/badge/Backend-Node.js_22_/_Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![FLUX.1](https://img.shields.io/badge/AI_Engine-FLUX.1_Schnell_(ZeroGPU)-ff9900?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/spaces/black-forest-labs/FLUX.1-schnell)
-[![MediaPipe](https://img.shields.io/badge/Computer_Vision-MediaPipe_Pose_(WASM)-4285f4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/mediapipe)
-[![Valtio](https://img.shields.io/badge/State-Valtio_Proxy-7928ca?style=for-the-badge)](https://github.com/pmndrs/valtio)
+### 1. Name and One-Line Summary (16 / 20 words max)
 
-[**Explore The App**](#-quickstart--how-to-run) • [**The Problem We Solved**](#-the-problem-we-solved) • [**The 6 Creative & Business Pillars**](#-the-6-creative--business-pillars) • [**System Architecture (ARCHITECTURE.md)**](./ARCHITECTURE.md) • [**Cloud & Vercel Deployment**](#-cloud-deployment--vercel-serverless)
+**Designili** — An AI 3D fashion platform connecting Algerian creators and brands with local print and sewing workshops.
 
-</div>
+### 2. Description: Problem, Solution & Target Audience (139 / 150 words max)
 
----
+In Algeria, aspiring creators and small clothing brands often have strong apparel ideas but lack the 3D design skills, software, or technical vocabulary to turn them into production-ready garments. Meanwhile, local printing and sewing workshops waste hours translating vague client sketches into printable files. Designili bridges both sides as an end-to-end AI 3D fashion studio and marketplace. Clients describe their vision in Algerian Darija (Arabizi) or English, and our AI generates custom graphics, colors, and textile patterns directly onto interactive 3D garments—from T-shirts and hoodies to Algerian caftans and karakous. Users preview fit live via our Wear It AR webcam try-on, explore community storefronts in the 3D Atelier City marketplace for inspiration, and send orders or factory-ready tech packs directly to verified partner print and sewing shops across 58 wilayas. Built for individual creators, emerging brands, and garment workshops.
 
-## 🎯 The Problem We Solved
+### 3. Live Demo Link
 
-Digital apparel design, fashion merchandising, and print-on-demand have historically been paralyzed by four critical industry bottlenecks:
+* **Production Web App (Zero Install Required):** [https://thirduni-designili.vercel.app](https://thirduni-designili.vercel.app)
+* **Judge Evaluation Controls:** Look for the floating **Judge Demo Bar** inside the 3D Studio to switch subscription tiers (**Free**, **Pro**, **Studio**, **Business**, **Business Plus**) in one click, reset daily AI generation quotas instantly, and inspect live DZD/USD unit economics without needing a credit or Edahabia card.
 
-1. **The Disconnected 2D Mockup Gap**:
-   - Fashion designers paste flat graphics onto static 2D product photos that ignore seam geometry, fabric drape, and back-of-garment inspection.
-   - Traditional 3D CAD suites (Clo3D, Browzwear, Marvelous Designer) demand workstation-grade GPUs, expensive enterprise seat licenses, and months of specialized training.
+### 4. Code Repository
 
-2. **The "Photo vs. Fabric" AI Dilemma**:
-   - When designers prompt standard text-to-image models (Midjourney, DALL-E, standard SDXL), the AI invariably outputs a *photograph of a human model standing in a studio wearing clothes*, rather than a flat, production-ready, edge-to-edge textile print or isolated apparel decal that can be UV-mapped to 3D meshes.
+* **Public GitHub Repository:** [https://github.com/fouad3966/Thirduni---Designili](https://github.com/fouad3966/Thirduni---Designili)
+* **Included Documentation:** This `README.md` covers what Designili is, how to run it locally, and who built which part; `ARCHITECTURE.md` details the internal WebGL, MediaPipe AR, Darija NLP, and serverless architecture; and `Financial Plan - AI 3D Fashion Design Platform (Designili).md` documents the full unit economics and 12-month financial model.
 
-3. **Cultural & Dialect Exclusion**:
-   - North African and Middle Eastern designers brainstorm concepts using regional dialects like **Algerian Darja** and **Arabizi** (Latin script with numeral substitutions, e.g., `"tshirt k7al fih zellij dahabi w ktiba DZ"`). Standard global AI models completely fail to understand these cultural expressions, colloquial phonetics, and traditional craft motifs.
+### 5. Demo Video (2–4 Minutes, Unlisted)
 
-4. **Privacy, Latency & Print-Shop Fragmentation**:
-   - Cloud virtual try-on pipelines upload sensitive webcam video to remote servers, incurring 15–30s latency while compromising biometric privacy.
-   - Furthermore, emerging designers lack seamless connections to local production factories and printing shops with native payment options (Cash-on-Delivery, Edahabia, CIB).
+* **Video Link (YouTube / Google Drive — Unlisted):** `<!-- TODO: Paste your 2-4 minute unlisted YouTube or Google Drive video link here before submitting -->`
 
----
+### 6. Team and Roles
 
-## 💡 The Solution: Designili 3D Atelier
+*Replace the placeholders below with your team members' full names and their exact contributions:*
 
-**Designili 3D Studio** resolves these challenges in an integrated, browser-native suite that runs on any modern laptop or mobile device:
+| Team Member Full Name | Role | What They Built (One Honest Line) |
+| :--- | :--- | :--- |
+| `<!-- Full Name 1 -->` | Lead 3D & Frontend Engineer | Built the React Three Fiber 3D garment studio, PBR material system, decal/text projection, and Valtio state engine. |
+| `<!-- Full Name 2 -->` | AI, NLP & Backend Engineer | Built the Algerian Darija/Arabizi NLP parser, FLUX.1/Pollinations AI texture pipeline, and Express/Vercel serverless APIs. |
+| `<!-- Full Name 3 -->` | Computer Vision & Marketplace Engineer | Implemented the MediaPipe WebAssembly AR "Wear It" camera try-on and the interactive 3D Atelier City street marketplace. |
+| `<!-- Full Name 4 -->` | Product, Financial Model & Commercial UX | Designed the Algerian print-shop order flow, Edahabia/CIB subscription checkout, tech-pack exporter, and unit economics model. |
 
-- **Zero-Latency 3D Customization**: Real-time 3D simulation with 360° interactive orbit, soft contact shadows, and support for multiple garments (T-Shirt, Hoodie, Evening Dress, Tailored Suit, Caftan, and Karakou).
-- **Art-Directed AI Fabric Synthesis**: Automatically transforms raw user concepts into flat, seamless, production-ready textile patterns via a zero-cost Hugging Face ZeroGPU integration (FLUX.1 Schnell) with automatic client-side Pollinations AI fallback.
-- **Native Algerian Darja Understanding**: Built-in NLP engine that parses Algerian Arabic script and Arabizi, extracting cultural motifs (Zellige, Karakou, Tassili, Amazigh) and color palettes both in the browser and in cloud serverless handlers.
-- **On-Device Neural Virtual Try-On**: Real-time webcam body tracking running entirely client-side using MediaPipe Pose Landmarker via WebAssembly (WASM) and SIMD in a dedicated Web Worker.
-- **Automated Factory Tech Pack Export**: Generates industrial production specification sheets ready for garment cutting, sublimation printing, and factory stitching.
-- **Algerian Commercial & SaaS Engine**: Complete multi-tier subscription engine with daily automated generation resets, Cash-on-Delivery (COD) partner print-shop dispatching across 58 wilayas, and local Edahabia/CIB payment simulation.
+### 7. Tech Stack & AI Tools Disclosure
 
----
+Using AI is core to both our runtime product and our engineering workflow. Below is our complete, transparent stack:
 
-## 🏛️ The 6 Creative & Business Pillars
+| Layer | Technologies, Frameworks, Models & Tools Used |
+| :--- | :--- |
+| **Languages** | JavaScript (ES2023+), HTML5, CSS3, GLSL (Three.js shaders) |
+| **Frontend Framework & UI** | React 18.2, Vite 5.3, Tailwind CSS 3.4, Framer Motion 11.2, `react-color` |
+| **3D Graphics & WebGL** | Three.js (`0.165`), React Three Fiber (`@react-three/fiber`), React Three Drei (`@react-three/drei`), `maath` |
+| **Reactive State Management** | Valtio (`1.13`) proxy-based state store with `localStorage` persistence |
+| **Computer Vision & AR Try-On** | Google MediaPipe Tasks Vision (`@mediapipe/tasks-vision` Pose Landmarker Lite in WebAssembly + Web Workers), HTML5 Canvas 2D occlusion & Kalman/EMA smoothing |
+| **Runtime AI & NLP Models** | **FLUX.1-schnell** (via Hugging Face ZeroGPU / `@gradio/client`), **Pollinations AI** (resilient serverless fallback), **OpenAI API** (`DALL-E` / GPT prompt enrichment), **Decart SDK**, **IDM-VTON / FitDiT** (Gradio virtual try-on route), and our **Custom Algerian Darija / Arabizi Rule & Lexicon NLP Engine** (`src/config/darja/darja.js`) |
+| **Backend & Cloud Hosting** | Vercel Serverless Functions (`/api/dalle.js`, `/api/nlp.js`), Node.js + Express (`/serveur`), MongoDB (`mongoose`), Cloudinary |
+| **AI Coding & Design Assistants** | Google Gemini (architecture planning, financial-to-UI prototyping, documentation refinement), GitHub Copilot / Cursor (code completion and refactoring) |
 
-```mermaid
-graph TD
-    A[Designili 3D Atelier] --> B[1. 3D Simulation & Decals]
-    A --> C[2. AI Textile Studio]
-    A --> D[3. Algerian Darja NLP]
-    A --> E[4. In-Browser Wear-It]
-    A --> F[5. Factory Tech Packs]
-    A --> G[6. Commercial & Print Engine]
+### 8. What Happens Next — 3-Month Roadmap (99 / 100 words max)
 
-    B --> B1[Three.js PBR Shading]
-    B --> B2[Dynamic Offscreen Text Decals]
-    B --> B3[Multi-Garment Library]
+Over the next three months, we will transition Designili from a functional prototype to commercial launch in Algeria. In Month 1, we will integrate live SATIM (CIB and Edahabia) payment processing via Chargily Pay and upgrade to dedicated commercial FLUX.1 and NLP inference endpoints. In Month 2, we will onboard our first 15 partner printing and sewing workshops across Algiers, Oran, and Constantine with a dedicated workshop portal for automated tech-pack ingestion, order tracking, and 15% commission invoicing. In Month 3, we will launch persistent user-owned storefronts inside the 3D Atelier City marketplace and add automated multi-size pattern grading.
 
-    C --> C1[FLUX.1 Schnell ZeroGPU]
-    C --> C2[Flat Textile Prompting]
-    C --> C3[Harmonized Color Extraction]
+## Deep Dive: Understanding the Problem, Solution & Target Ecosystem
 
-    D --> D1[Arabizi Phonetic Normalizer]
-    D --> D2[Cultural Motif Lexicon]
-    D --> D3[Client + Server Dual Runtime]
+### The Problem
 
-    E --> E1[MediaPipe Pose WASM]
-    E --> E2[Dedicated Web Worker]
-    E --> E3[100% Client-Side Privacy]
+Across Algeria and emerging markets, custom apparel creation is broken for both sides of the market:
 
-    F --> F1[High-Res Multi-Angle WebGL Renders]
-    F --> F2[Bill of Materials & Hex Specs]
-    F --> F3[Print-Ready Tech Pack PDF/HTML]
+1. **For Everyday Clients & Aspiring Creators:** Thousands of young people, students, event organizers, and emerging streetwear creators have vivid clothing concepts in mind. However, they cannot bring them to life because professional tools (CLO3D, Adobe Illustrator, Marvelous Designer) require steep technical expertise, high-end hardware, and English design terminology. Describing an idea in **Algerian Darija (Arabizi)** like *"dirli triko k7el fih rasma ta3 sahra b dhahbi"* does not work in standard international AI tools.
+2. **For Local Printing & Sewing Workshops (Ateliers):** Algeria has a strong network of textile printers (DTG, screen printing, sublimation, embroidery) and sewing workshops across all 58 wilayas. Yet workshop owners spend an enormous amount of unbilled time acting as free graphic designers—back-and-forth messaging with clients over low-resolution screenshots, guessing garment measurements, and manually recreating print files.
+3. **Lack of Trust Before Ordering:** Clients hesitate to order custom garments online because static 2D mockups fail to show how a garment drapes in 3D or how it looks on their own body.
 
-    G --> G1[Daily Auto-Resetting Quota]
-    G --> G2[Algerian COD Print-Shop Dispatch]
-    G --> G3[Judge & Evaluator Sandbox Bar]
+### Our Solution: Designili as the Two-Sided Bridge
+
+**Designili** sits squarely in the middle as an intelligent creative and commercial bridge between **clients who have ideas** and **printing/sewing companies that produce them**:
+
+* **Speak Darija or English, Get a 3D Garment:** Users type their idea naturally in **Algerian Darija (Arabizi)**, **Arabic**, or **English**. Our custom cultural NLP engine (`src/config/darja/darja.js` and `/api/nlp/understand`) parses garment types, Algerian color idioms (e.g., *k7el*, *zra9*, *bordeaux*, *dhahbi*), traditional motifs, and placement intents, then synthesizes high-resolution chest decals or seamless full-garment textures on a live 360° 3D mesh.
+* **Culturally Grounded 3D Catalog:** Beyond standard T-shirts and hoodies, Designili natively supports 3D meshes for **Evening Dresses, Tailored Suits, Algerian Caftans, Traditional Karakous, and Footwear**.
+* **Try Before You Print ("Wear It" Live AR):** With one click, users activate their webcam. Our in-browser MediaPipe WebAssembly pose tracker maps their shoulders, torso, and hips at 30+ FPS—letting them physically move and see their custom garment fitted on their body with zero server latency.
+* **Community Inspiration in the 3D Atelier City Marketplace (`game/atelier-city`):** Users are not designing in isolation. They can enter an interactive 3D virtual shopping street to browse storefronts created by other designers, inspect community garments for inspiration, and order existing community designs.
+* **Automated Tech Packs & Direct Workshop Ordering:** When a design is ready, clients choose their size (or a multi-size bulk matrix for companies/events), select their **Wilaya**, and pick a verified local partner print/sewing shop with transparent pricing and delivery times. Simultaneously, Designili compiles a **Factory Tech Pack / Spec Sheet** (`ExportModal.jsx`) containing exact HEX color codes, decal coordinates, fabric material maps, and high-res print assets so the workshop can print and sew immediately without manual redesign.
+
+### Who Designili Serves (Target Groups)
+
+| Target Segment | Core Pain Point Solved | How They Use Designili |
+| :--- | :--- | :--- |
+| **1. Individual Creators & Everyday Clients** | Have creative outfit ideas in Darija/English but zero graphic design or 3D skills. | Generate designs via AI prompts, test fit with **Wear It** AR camera, browse the marketplace, and order single pieces via **Cash on Delivery (COD)** from local partner print shops. |
+| **2. Emerging Clothing Brands & Event Organizers** | Need cohesive collections, brand kits, and bulk orders without hiring an expensive 3D studio. | Subscribe to **Studio** or **Business** tiers, save brand logos/palettes in the **Brand Kit**, place multi-size bulk orders (`XS–XXL`), or export print-ready `PNG/SVG/PDF` tech packs. |
+| **3. Printing & Sewing Companies (Partner Workshops)** | Lose hours fixing unusable client images and need steady, pre-validated order flow. | Receive standardized, production-ready orders and spec sheets routed by Wilaya, paying Designili a simple **15% commission** only on completed orders (**Business Plus** workshops can also use the studio for their own in-house production). |
+
+## Business Model & Pricing Tiers (October 2026 Financial Plan)
+
+All prices are displayed in both **Algerian Dinars (DA)** and **US Dollars (USD)** at the official exchange rate (`1 USD = 134 DA`).
+
+* **What We Limit:** Only **AI generations** (submitting a new AI prompt or regenerating).
+* **Always Free & Unlimited:** Changing garment colors, uploading custom logos/artwork, adding typography, rotating the 3D garment, and browsing community stores.
+* **Separation of Payment Rule:** *Subscriptions pay for the design tools on Designili (via **Edahabia**, **CIB**, or **Mastercard**). The physical garment, printing, and delivery are paid separately to the chosen print shop via **Cash on Delivery** (Designili earns a 15% commission invoiced to partner print shops).*
+
+### Individual Tiers
+
+| Feature | Free | Pro | Studio |
+| :--- | :--- | :--- | :--- |
+| **Monthly Price** | $0 (0 DA) | $9 (1,200 DA) | $19 (2,550 DA) |
+| **Annual Price** | n/a | $79 (10,600 DA) | $169 (22,600 DA) |
+| **AI Generations** | 3 in total | 60/mo (100/mo on annual) | 150/month |
+| **Browse Community Stores** | Yes | Yes | Yes |
+| **Wear It (Live AR Camera)** | Locked | Yes | Yes |
+| **Order from Partner Print Shops** | Locked | Yes | Yes |
+| **Export Tech Pack Files (PNG, SVG, PDF)** | Locked | Locked | Yes |
+| **Print with Any Outside Shop** | No | No | Yes |
+
+### Company & Workshop Tiers
+
+| Feature | Business | Business Plus |
+| :--- | :--- | :--- |
+| **Monthly Price** | $39 (5,200 DA) | $79 (10,600 DA) |
+| **Annual Price** | $349 (46,800 DA) | $699 (93,700 DA) |
+| **Shared Team AI Generations** | 300/month | 600/month |
+| **Wear It (Live AR Camera)** | Yes | Yes |
+| **Order from Partner Print Shops** | Yes | Yes |
+| **Bulk Orders (Multi-Size Matrix)** | Yes | Yes |
+| **Brand Kit (Saved Logos & Palettes)** | Yes | Yes |
+| **Export Files & Outside/In-House Printers** | Locked | Yes |
+
+## Repository Structure
+
+```text
+Thirduni---Designili/
+├── api/                        # Vercel Serverless Functions (zero-config cloud deployment)
+│   ├── dalle.js                # Serverless AI texture/decal synthesis gateway (/api/v1/dalle)
+│   └── nlp.js                  # Serverless Algerian Darija & English NLP parser (/api/nlp/understand)
+├── game/                       # 3D Virtual Marketplace subsystem
+│   └── atelier-city/           # Interactive 3D street-level store exploration environment
+├── public/                     # Static 3D garment assets (.glb, .mtl), textures, and studio icons
+├── serveur/                    # Standalone Node.js + Express backend (full parity with /api)
+│   ├── route/                  # Express routes: dalle.routes.js, nlp.routes.js, tryon.routes.js
+│   ├── services/               # AI & NLP services: darja.js, colors.js, huggingface.js, tryon.js
+│   └── index.js                # Express server entrypoint (port 8080)
+├── src/                        # React 18 + Vite 5 Frontend Application
+│   ├── canvas/                 # Three.js / React Three Fiber 3D viewport & procedural meshes
+│   │   ├── index.jsx           # WebGL Canvas, PBR lighting & environment setup
+│   │   ├── Garment.jsx         # Multi-garment 3D loader (Hoodie, Dress, Suit, Caftan, Karakou)
+│   │   ├── Shirt.jsx           # Primary T-Shirt PBR mesh with decal & trim projection
+│   │   ├── GarmentTextDecal.jsx# 3D curved text decal mesh projection
+│   │   ├── useTextTexture.js   # Offscreen HTML5 Canvas dynamic text texture hook
+│   │   ├── CameraRig.jsx       # Smooth pointer-reactive 3D camera controller
+│   │   ├── ModelRotator.jsx    # 360-degree inspection rotation controller
+│   │   └── BackDrop.jsx        # Accumulative studio shadow & lighting backdrop
+│   ├── comp/                   # Studio UI, Modals & Checkout Components
+│   │   ├── AIPicker.jsx        # Bilingual Darija/English AI prompt studio & quota tracker
+│   │   ├── ColorPicker.jsx     # Garment & trim color studio + Company Brand Kit swatches
+│   │   ├── FilePiker.jsx       # Custom artwork/logo upload & placement controls
+│   │   ├── TextPicker.jsx      # 3D typography editor (fonts, scale, rotation, colors)
+│   │   ├── GarmentSelector.jsx # 3D garment model switcher
+│   │   ├── ExportModal.jsx     # Factory Tech Pack & Spec Sheet generator (tier-gated)
+│   │   ├── PricingModal.jsx    # Interactive Individual & Company pricing comparison modal
+│   │   ├── SubscriptionCheckoutModal.jsx # Edahabia, CIB & Mastercard checkout prototype
+│   │   ├── OrderPrintModal.jsx # 6-step Wilaya partner print-shop order & status tracker
+│   │   ├── JudgeDemoBar.jsx    # Live hackathon evaluator toolbar (1-click tier & quota switcher)
+│   │   ├── DesignHistoryDropdown.jsx # Lookbook snapshot & undo/redo state manager
+│   │   ├── ViewControls.jsx    # Zoom, pan, and auto-rotate viewport controls
+│   │   ├── Tab.jsx             # Glassmorphic dock tab item
+│   │   └── CustomButtom.jsx    # Reusable themed action button
+│   ├── config/                 # Domain Logic, Darja Lexicon, Pricing & Spec Compilers
+│   │   ├── darja/darja.js      # Algerian Darija/Arabizi phonetic dictionary & intent parser
+│   │   ├── garments/           # Per-garment 3D transform & material configurations
+│   │   ├── pricingPlans.js     # Full USD/DA tier specs, partner print shops & unit economics
+│   │   ├── dailyQuota.js       # LocalStorage AI generation quota manager & sandbox reset
+│   │   ├── exportSpecSheet.js  # High-res canvas spec sheet & tech pack compiler
+│   │   ├── fabricTexture.js    # Procedural weave/knit normal & roughness map generator
+│   │   ├── logoMask.js         # UV decal bounding & transparency masking utilities
+│   │   └── designHistory.js    # Snapshot serialization for design revisions
+│   ├── pages/                  # Primary Application Views
+│   │   ├── Home.jsx            # Hero landing page, marketplace entry & pricing access
+│   │   └── Costumizer.jsx      # Full 3D Studio workspace, dock, and action bar
+│   ├── store/                  # Reactive Global State
+│   │   └── index.js            # Valtio proxy store (garment state, plans, orders, modals)
+│   ├── tryon/                  # In-Browser Real-Time AR Virtual Try-On
+│   │   ├── WearIt.jsx          # Live webcam AR fitting modal & snapshot capture
+│   │   ├── poseTracker.js      # MediaPipe Pose Landmarker lifecycle controller
+│   │   ├── pose.worker.js      # Dedicated Web Worker for off-thread pose inference
+│   │   ├── fitPose.js          # 3D-to-2D torso affine transformation math
+│   │   ├── smoothFit.js        # Temporal Kalman/EMA landmark smoothing filter
+│   │   └── occlusion.js        # Body/arm segmentation & depth occlusion masking
+│   ├── App.jsx                 # Root state-driven view orchestrator
+│   └── main.jsx                # React DOM mounting entrypoint
+├── ARCHITECTURE.md             # Deep-dive system architecture & ADRs for technical evaluators
+├── Financial Plan - AI 3D Fashion Design Platform (Designili).md # Full financial plan
+├── vercel.json                 # Serverless routing & rewrite configuration
+└── package.json                # Dependencies and build scripts
 ```
 
-### 1. Real-Time 3D Garment Simulation & Planar Decal Projection
-- **Interactive Orbit & Shading**: Smooth 360° rotation and camera rig powered by Three.js and React Three Fiber with soft ambient occlusion shadows (`AccumulativeShadows`).
-- **Dynamic 2D Offscreen Canvas Typography**: Write custom slogans, typography, or names directly onto garments. Text decals are rasterized dynamically onto an offscreen canvas with real-time font, size, tracking, curved text, screenprint effects, and color adjustments.
-- **Planar Decal Projection & Alpha Cutout**: Upload logos and graphics with automated background transparency masking (`logoMask.js`) projected onto front or back chest coordinates without texture distortion.
-- **Multi-Garment Library**: Seamlessly toggle between casual street fashion (T-Shirt, Hoodie) and formal/cultural couture (Evening Dress, Tailored Suit, Caftan, Karakou).
-
-### 2. Generative AI Textile Studio (FLUX.1 Schnell + Fallback)
-- **Zero-Cost ZeroGPU Infrastructure**: Connects to the public `black-forest-labs/FLUX.1-schnell` Space via Gradio WebSocket RPC—no paid API credits required.
-- **Cloud Serverless & Client Fallback**: Features serverless API functions (`/api/dalle`) and direct client-side fallback via Pollinations AI for instant, 1024×1024 edge-to-edge pattern generation on serverless environments like Vercel.
-- **Textile-First Prompt Engineering**: Transforms design prompts into flat, top-down, edge-to-edge fabric patterns while suppressing human models, mockups, and folds.
-- **Dominant Color Coordination**: Automatically extracts the generated textile's dominant palette to dynamically tint the garment's collar, cuffs, and trim accents.
-
-### 3. Cultural NLP Engine: Algerian Darja & Arabizi
-- **Dual-Script & Arabizi Parsing**: Accurately interprets dialect inputs written in Arabic script or Latin Arabizi with phonetic numbers (`3` for ع, `7` for ح, `9` for ق, `5` for خ).
-- **Phonetic Invariant Skeleton Matching**: Unifies diverse dialect spellings (`"khal"`, `"k7al"`, `"kahla"`, `"akhal"` $\rightarrow$ canonical Black `#0B0B0B`).
-- **Heritage Motif Recognition**: Extracts traditional North African design elements:
-  - *Zellige* (`زليج`): Geometric mosaic tile patterns.
-  - *Karakou* (`كراكو`): Gold embroidery on velvet.
-  - *Tassili* (`طاسيلي`): Prehistoric Saharan rock art.
-  - *Amazigh / Kabyle* (`امازيغي`): Berber talisman diamonds and coral ornaments (`tazra`).
-  - *Casbah* (`قصبة`): Whitewashed Mediterranean architectural textures.
-  - *Modern Colloquial*: Animals and patterns like `gat` (cat / قط), `mna9et` (منقط / polka dots).
-- **Dual Client/Server Runtime**: Operates completely in-browser ([`src/config/darja/`](./src/config/darja/)) or via serverless endpoints ([`api/nlp.js`](./api/nlp.js)).
-
-### 4. On-Device Real-Time Virtual Try-On ("Wear It")
-- **Client-Side Computer Vision**: Live body tracking powered by Google MediaPipe Pose Landmarker Lite running in a dedicated Web Worker via WebAssembly (WASM).
-- **Biometric Privacy**: Video frames are processed strictly in local device RAM—no webcam footage or biometrics ever touch a server.
-- **Real-Time Affine Fitting**: Continuously calculates shoulder midpoint, bi-acromial width, torso length, and roll angle to fit the customized 3D garment live onto the user's body.
-
-### 5. Automated Production Tech Pack Exporter
-- **Factory-Ready Spec Sheets**: One-click generation of industrial production specification sheets ([`src/config/exportSpecSheet.js`](./src/config/exportSpecSheet.js)).
-- **Multi-Angle Renders**: Captures high-res front, back, and detail viewports from the WebGL canvas.
-- **Bill of Materials**: Includes exact hex color codes, decal dimensions in centimeters, placement coordinates, and garment cut specifications.
-
-### 6. Algerian Commercial Engine & Evaluator Sandbox
-- **Automated Daily Quota Tracking**: The free tier provides 3 AI generations per day, automatically resetting every day at midnight based on local calendar date (`src/config/dailyQuota.js`).
-- **Partner Print-Shop Dispatch**: Direct checkout flow dispatching custom orders to Algerian partner print shops with Cash-on-Delivery (COD) or simulated Edahabia/CIB payment.
-- **Interactive Judge Demo Bar (`JudgeDemoBar.jsx`)**: Built specifically for evaluators, venture judges, and testers:
-  - Instant subscription tier switcher (Free, Pro, Studio, Business, Business Plus).
-  - One-click **Reset AI Quota** button so testers never get locked out during demos.
-  - Real-time Unit Economics & Year 1 Milestones modal (CAC, LTV, GMV, and print-shop margins).
-
----
-
-## 🛠️ Technology Stack
-
-| Layer | Technology | Purpose |
-| --- | --- | --- |
-| **Frontend Framework** | **React 18 + Vite 5** | High-performance reactive UI and instant HMR development |
-| **3D Rendering Engine** | **Three.js + React Three Fiber + Drei** | PBR materials, GLTF garment meshes, soft contact shadows & decal mapping |
-| **State Management** | **Valtio** | Fine-grained reactive proxy store for 60fps 3D rotation and dynamic textures |
-| **Computer Vision** | **MediaPipe Pose Landmarker (WASM/SIMD)** | Real-time on-device body pose estimation inside a dedicated Web Worker |
-| **Styling & Theme** | **Vanilla CSS + Tailwind CSS** | Custom luxury Atelier dark glassmorphism design system |
-| **Motion & Animation** | **Framer Motion** | Micro-interactions, animated drawers, and responsive transitions |
-| **Cloud Deployment** | **Vercel Serverless Functions (`api/`)** | Zero-maintenance cloud deployment with built-in API routes |
-| **Dedicated Backend** | **Node.js 22 + Express (`serveur/`)** | Standalone REST API gateway and FLUX.1 Gradio RPC orchestrator |
-| **AI Generation Engine** | **FLUX.1 Schnell + Pollinations Fallback** | Edge-to-edge textile patterns with resilient serverless fallback |
-| **Cultural NLP Engine** | **Custom Phonetic Lexicon Engine** | Zero-latency normalization, Arabizi folding, and Darja motif extraction |
-
----
-
-## 🚀 Quickstart & How to Run
+## Quickstart: How to Run Locally
 
 ### Prerequisites
-- **Node.js 20+** (v22 recommended) installed on your system.
-- Modern WebGL2-compatible browser (Chrome, Edge, Firefox, Safari).
-- Webcam (optional, required for the live "Wear It" try-on feature).
 
----
+* **Node.js** `v18+` (recommended `v20` or `v22`)
+* **npm** `v9+`
+* Modern browser with **WebGL 2.0** and webcam permissions (for the **Wear It** AR try-on feature)
 
-### Option A: Frontend + Serverless Development (Recommended)
+### Option A: Run Frontend + Serverless APIs (Fastest Setup)
 
-Run the full client application with integrated serverless endpoints and client-side AI fallback:
+The frontend automatically connects to the built-in Darija NLP engine and resilient AI texture pipeline out of the box:
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone https://github.com/fouad3966/Thirduni---Designili.git
+cd Thirduni---Designili
+
+# 2. Install frontend dependencies
 npm install
 
-# 2. Start Vite development server
+# 3. Start the Vite development server
 npm run dev
 ```
 
-Open your browser to:
-```
-http://localhost:5173
-```
+Open `http://localhost:5173` in your browser.
 
----
+### Option B: Run Full Stack with Standalone Express Server (`/serveur`)
 
-### Option B: Full-Stack with Dedicated Node.js Express Backend
-
-To run with the local Node.js Express server (`serveur/`) and direct Hugging Face ZeroGPU Gradio integration:
+If you want to run the dedicated Node.js/Express backend locally on port `8080` (with custom Hugging Face / OpenAI API keys):
 
 ```bash
-# 1. Install frontend dependencies
-npm install
-
-# 2. Install backend dependencies
+# 1. In a second terminal, navigate to the backend folder
 cd serveur
 npm install
-cd ..
 
-# 3. Configure backend environment
-cp serveur/.env.example serveur/.env
+# 2. Configure environment variables (optional — fallbacks work without keys)
+# Create a .env file in /serveur:
+# PORT=8080
+# HF_TOKEN=your_huggingface_token_optional
+# OPENAI_API_KEY=your_openai_key_optional
 
-# 4. Start backend (Terminal 1 - Port 8080)
-cd serveur
-npm run dev
-
-# 5. Start frontend (Terminal 2 - Port 5173)
-npm run dev
+# 3. Start the Express server
+npm start
 ```
 
----
+### How Judges Can Test Every Feature in 60 Seconds
 
-## ☁️ Cloud Deployment & Vercel Serverless
-
-Designili is pre-configured for seamless deployment to **Vercel** with full SPA routing, Content Security Policy (CSP) headers, and serverless functions:
-
-1. **Vercel Configuration (`vercel.json`)**:
-   - Automated routing: `POST /api/v1/dalle` $\rightarrow$ `api/dalle.js`.
-   - Automated routing: `POST /api/nlp/understand` $\rightarrow$ `api/nlp.js`.
-   - SPA catch-all rewrite: `/((?!api/).*)` $\rightarrow$ `/index.html`.
-   - Pre-configured CSP headers permitting WebAssembly, Web Worker blobs (`worker-src 'self' blob:`), and dynamic canvas script evaluation.
-
-2. **One-Click Deploy via GitHub**:
-   - Push to your GitHub repository:
-     ```bash
-     git push origin main
-     ```
-   - Connect the repository in the Vercel dashboard—Vercel will detect Vite and build automatically with `npm run build`.
-
----
-
-## 🧪 Testing & Quality Assurance
-
-Run the automated test suites to verify backend endpoints, Darja NLP accuracy, and try-on workers:
-
-```bash
-# Verify backend API routes, rate limiting & error handling
-cd serveur
-npm test
-cd ..
-
-# Evaluate Algerian Darja NLP parser against evaluation benchmarks
-node scripts/eval-darja.mjs
-
-# Verify Pose Tracker and Web Worker lifecycle without needing a webcam
-npm run test:tryon
-
-# Validate production bundle compilation
-npm run build
-```
-
----
-
-## 📖 Deep-Dive Architecture Document
-
-For software engineers, system architects, and technical evaluators seeking:
-- Complete Architectural Decision Records (ADRs 001–008)
-- 3D Planar Decal & UV Projection Mathematics
-- MediaPipe Pose Fitting Affine Equations & Landmark Transforms
-- Algerian Darja Phonetic Skeleton Hashing Algorithms & Lexicon Rules
-- Daily Quota Tracking Architecture & Evaluator Demo State
-- Factory Tech Pack Export Pipeline
-
-👉 **Read the comprehensive [ARCHITECTURE.md](./ARCHITECTURE.md) document.**
-
----
-
-## 📜 Credits & Attributions
-
-- **3D Garment Models**: Base T-Shirt (`shirt_baked.glb`), Hoodie (`garments/hoodie/model.glb`), Evening Dress (`garments/dress/model.glb`), and Suit (`garments/suit/model.glb`) licensed under Creative Commons Attribution (see [`public/garments/credits.html`](./public/garments/credits.html)).
-- **AI Models & Backends**: [FLUX.1 Schnell](https://huggingface.co/spaces/black-forest-labs/FLUX.1-schnell) by Black Forest Labs hosted on Hugging Face ZeroGPU; Pollinations AI fallback.
-- **Brand Assets**: Official Designili emblem and wordmark.
-
----
-
-<div align="center">
-  <b>DESIGNILI 3D STUDIO</b><br/>
-  <i>Engineered for the next generation of generative apparel designers.</i>
-</div>
+1. **Test Darija or English AI Design:** Click **Customize It**, open the **AI Studio** tab on the left dock, and type a prompt in Algerian Darija (e.g., `"triko k7el fih rasma ta3 sahra b dhahbi"`) or English (`"cyberpunk geometric gold embroidery"`).
+2. **Switch Garments & Fabrics:** Use the bottom garment selector to switch between **T-Shirt, Hoodie, Dress, Suit, Caftan, and Karakou**, and customize colors, trims, and 3D text decals.
+3. **Test Live AR Try-On ("Wear It"):** Click **Wear It** in the top bar to project your customized 3D garment onto your live webcam feed using MediaPipe pose tracking.
+4. **Use the Judge Demo Bar:** Click the floating **Judge Demo Bar** pill to switch instantaneously between **Free, Pro, Studio, Business, and Business Plus** plans, test tier-gated features (like Tech Pack export and Company Brand Kits), view live **Unit Economics**, and walk through the **Edahabia / CIB Checkout** and **Wilaya Print-Shop Order Tracker** (`Received → Printing → Shipped → Delivered`).

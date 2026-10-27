@@ -38,12 +38,13 @@ In Algeria, aspiring creators and small clothing brands often have strong appare
 | :--- | :--- | :--- |
 | **Amani Hansali** | Project Lead, CTO & Product Architect | Led the product strategy, and 12-month unit economics financial plan. |
 | **Mohamed Fouad Rabahi** | Full-Stack Engineer | Built the studio UI enhancements, Edahabia/CIB subscription checkout, Wilaya print-shop delivery flow, and Darija NLP refinements. |
-| **Abdelkader Abbes** | AI & Darija NLP | Developed the core Algerian Darija (الدارجة) intent parser (`darja.js`) and wired the generative AI prompt-to-texture pipeline. |
+| **Abdelkader Abbes** | AI & Darija NLP Engineer | Developed the core Algerian Darija (الدارجة) intent parser (`darja.js`) and wired the generative AI prompt-to-texture pipeline. |
 | **Moncef Azzouz** | Computer Vision & 3D Marketplace Engineer | Implemented the MediaPipe WebAssembly "Wear It" AR camera try-on pipeline and 3D Atelier City marketplace integration. |
+| **Abdeldjalil Benchabne** | 3D Garments, Mockups & Print-Shop | Integrated the 3D garments and mockups, tested meshes, and researched local Algerian print-shop pricing benchmarks and Wilaya delivery estimates. |
+| **Milissa Temam** | QA Testing & Spec Sheet Reviewer | Tested 3D decal positioning across garment meshes and verified exported tech-pack spec sheets across browser viewports. |
 | **Zina Guerda** | Color Palette & Preset Contributor | Curated traditional Algerian color swatches (`palette.js`) and assisted with default garment preset configurations. |
 | **Kassouar Fatima** | Darija Lexicon & Prompt Tester | Gathered everyday Algerian Darija clothing terms and tested prompt variations against the NLP dictionary. |
-| **Abdeldjalil Benchabne** | 3D Garments, Mockups & Print-Shop Contributor | Integrated the 3D garments and mockups, tested meshes, and researched local Algerian print-shop pricing benchmarks and Wilaya delivery estimates. |
-| **Milissa Temam** | QA Testing & Spec Sheet Reviewer | Tested 3D decal positioning across garment meshes and verified exported tech-pack spec sheets across browser viewports. |
+
 
 ### 7. Tech Stack & AI Tools Disclosure
 

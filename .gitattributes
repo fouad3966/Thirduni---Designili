@@ -1,0 +1,17 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Binary files that must never have CRLF conversions
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.glb binary
+*.gltf binary
+*.bin binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

@@ -330,72 +330,42 @@ const Costumizer = () => {
               </div>
             </div>
           </motion.div>
+          {/* Plan Quota Pill - Top Left */}
+          <motion.div className='absolute z-10 top-3 left-3 sm:top-5 sm:left-5' {...fadeAnimation}>
+            <button
+              type='button'
+              onClick={() => openPricing(snap.audienceTab || 'individuals')}
+              className='px-3 py-1.5 rounded-xl bg-slate-900/90 border border-violet-500/40 hover:border-violet-400 text-xs text-white flex items-center gap-2 shadow-lg backdrop-blur-md transition group active:scale-95 cursor-pointer'
+              title='Click to view or upgrade subscription plan'
+            >
+              <span className='px-1.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-violet-600 text-white'>
+                {ALL_PLANS[snap.currentPlan]?.badge || 'Starter'}
+              </span>
+              <span className='text-slate-300 text-[11px] font-medium'>
+                {snap.generationsUsed || 0}/{getPlanQuota(snap.currentPlan, snap.billingCycle) === Infinity ? '∞' : getPlanQuota(snap.currentPlan, snap.billingCycle)} Gens
+              </span>
+              <span className='text-[10px] text-violet-400 font-bold group-hover:translate-x-0.5 transition-transform'>
+                Upgrade ↗
+              </span>
+            </button>
+          </motion.div>
+
           <motion.div className='absolute z-10 top-3 right-3 sm:top-5 sm:right-5 flex flex-col items-end gap-2 sm:gap-2.5 max-w-[calc(100vw-24px)]' {...fadeAnimation}>
-            {/* Top Row: Plan Quota Pill & Glowing Order This Design CTA */}
-            <div className='flex items-center gap-2 flex-wrap justify-end'>
-              <button
-                type='button'
-                onClick={() => openPricing(snap.audienceTab || 'individuals')}
-                className='px-3 py-1.5 rounded-xl bg-slate-900/90 border border-violet-500/40 hover:border-violet-400 text-xs text-white flex items-center gap-2 shadow-lg backdrop-blur-md transition group'
-                title='Click to view or upgrade subscription plan'
-              >
-                <span className='px-1.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-violet-600 text-white'>
-                  {ALL_PLANS[snap.currentPlan]?.badge || 'PLAN'}
-                </span>
-                <span className='text-slate-300 text-[11px] font-medium'>
-                  {snap.generationsUsed || 0}/{getPlanQuota(snap.currentPlan, snap.billingCycle) === Infinity ? '∞' : getPlanQuota(snap.currentPlan, snap.billingCycle)} Gens
-                </span>
-                <span className='text-[10px] text-violet-400 font-bold group-hover:translate-x-0.5 transition-transform'>
-                  Upgrade ↗
-                </span>
-              </button>
-
-              <button
-                type='button'
-                onClick={() => openOrderPrint()}
-                className='flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white shadow-lg shadow-emerald-500/30 border border-emerald-400/40 active:scale-95 transition-all'
-                title='Order custom garments with this design printed by Algerian partner shops (Cash on Delivery)'
-              >
-                <span className='text-sm'>🚚</span>
-                <span>Order This Design</span>
-              </button>
-            </div>
-
-            {/* Middle Row: View & Mode Actions */}
+            {/* Action Buttons */}
             <div className='flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end'>
               <CustomButtom
                 type='filled'
-                title={snap.isFlipped ? '🔄 Front View' : '🔄 Flip to Back'}
+                title={snap.isFlipped ? 'Front View' : 'Flip to Back'}
                 handleClick={toggleFlip}
                 customStyles='w-fit px-2.5 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm whitespace-nowrap rounded-lg'
               />
               <CustomButtom
                 type='filled'
-                title={snap.currentPlan === 'free' ? '🔒 Wear it (Pro)' : '📷 Wear it'}
-                handleClick={() => {
-                  if (snap.currentPlan === 'free') {
-                    openPricing('individuals');
-                  } else {
-                    state.wearItOpen = true;
-                  }
-                }}
+                title='Wear it'
+                handleClick={() => state.wearItOpen = true}
                 disabled={generatingImg}
-                customStyles={`w-fit px-2.5 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm whitespace-nowrap rounded-lg ${
-                  snap.currentPlan === 'free' ? 'bg-amber-600/30 text-amber-300 border border-amber-500/50 hover:bg-amber-600/40' : ''
-                }`}
+                customStyles='w-fit px-2.5 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm whitespace-nowrap rounded-lg'
               />
-              {snap.currentPlan === 'free' && (
-                <button
-                  type='button'
-                  onClick={() => (state.wearItOpen = true)}
-                  disabled={generatingImg}
-                  className='w-fit px-2.5 sm:px-3 py-1.5 sm:py-2 font-bold text-xs whitespace-nowrap rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 shadow-xs transition active:scale-95 flex items-center gap-1 cursor-pointer'
-                  title='Test Wear It AR virtual try-on directly (bypasses plan gate for testing)'
-                >
-                  <span>🧪</span>
-                  <span>Test Wear it</span>
-                </button>
-              )}
               <CustomButtom
                 type='filled'
                 title='Go Back'
@@ -404,17 +374,8 @@ const Costumizer = () => {
               />
             </div>
 
-            {/* Bottom Row: Export & History */}
+            {/* Bottom Row: History */}
             <div className='flex items-center gap-2'>
-              <button
-                type='button'
-                onClick={() => setIsExportOpen(true)}
-                className='flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-slate-700'
-                title='Export production spec sheet (Front & Back)'
-              >
-                <span>📐</span>
-                <span>Export Spec Sheet</span>
-              </button>
               <DesignHistoryDropdown />
             </div>
           </motion.div>
@@ -435,6 +396,27 @@ const Costumizer = () => {
               />
             ))}
           </motion.div>
+
+          {/* Action Buttons - Bottom Right */}
+          <motion.div className='editor-order fixed z-20 bottom-5 right-5 sm:bottom-6 sm:right-8 flex flex-col gap-2 items-stretch min-w-[170px]' {...fadeAnimation}>
+            <button
+              type='button'
+              onClick={() => openOrderPrint()}
+              className='w-full px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg active:scale-95 transition-all cursor-pointer text-center'
+              title='Order custom garments with this design printed by Algerian partner shops (Cash on Delivery)'
+            >
+              Order This Design
+            </button>
+            <button
+              type='button'
+              onClick={() => setIsExportOpen(true)}
+              className='w-full px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-black text-white shadow-lg active:scale-95 transition-all cursor-pointer text-center'
+              title='Export this design (Front & Back technical spec sheet)'
+            >
+              Export This Design
+            </button>
+          </motion.div>
+
           <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
         </>
       )}

@@ -27,10 +27,9 @@ const Home = () => {
                         <button
                             type="button"
                             onClick={() => openPricing('individuals')}
-                            className="px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-900/80 border border-violet-500/40 hover:border-violet-400 text-xs sm:text-sm text-violet-200 hover:text-white font-bold backdrop-blur-md transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+                            className="px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-900/80 border border-violet-500/40 hover:border-violet-400 text-xs sm:text-sm text-violet-200 hover:text-white font-bold backdrop-blur-md transition shadow-md cursor-pointer active:scale-95"
                         >
-                            <span>💎</span>
-                            <span>Pricing & Plans</span>
+                            Pricing & Plans
                         </button>
                     </motion.header>
 

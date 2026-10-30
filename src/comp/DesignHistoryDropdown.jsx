@@ -10,13 +10,13 @@ import {
 import { GARMENTS } from '../config/garments/catalog';
 
 const GARMENT_ICONS = {
-  tshirt: '👕',
-  dress: '👗',
-  caftan: '👘',
-  karakou: '🥻',
-  hoodie: '🧥',
-  hat: '🧢',
-  shoes: '👟',
+  tshirt: '',
+  dress: '',
+  caftan: '',
+  karakou: '',
+  hoodie: '',
+  hat: '',
+  shoes: '',
 };
 
 const DesignHistoryDropdown = () => {
@@ -35,7 +35,7 @@ const DesignHistoryDropdown = () => {
     id: currentGarment,
     label: currentGarment.charAt(0).toUpperCase() + currentGarment.slice(1),
   };
-  const currentIcon = GARMENT_ICONS[currentGarment] || '👕';
+  const currentIcon = '';
 
   // Number of designs for current garment vs total
   const currentGarmentHistory = history.filter(
@@ -145,13 +145,12 @@ const DesignHistoryDropdown = () => {
       );
     }
 
-    const icon = GARMENT_ICONS[item.garment] || '👕';
     return (
       <div
         style={{ backgroundColor: item.color || '#333' }}
-        className='w-12 h-12 rounded-lg border border-white shadow-xs shrink-0 flex items-center justify-center text-lg text-white'
+        className='w-12 h-12 rounded-lg border border-white shadow-xs shrink-0 flex items-center justify-center text-xs font-bold uppercase text-white'
       >
-        <span>{icon}</span>
+        <span>{(item.garment || '3D').slice(0, 2)}</span>
       </div>
     );
   };
@@ -164,7 +163,6 @@ const DesignHistoryDropdown = () => {
         onClick={() => setIsOpen(!isOpen)}
         className='flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/90 hover:bg-white text-gray-800 border border-white/60 shadow-lg backdrop-blur-md transition-all active:scale-95'
       >
-        <span>{currentIcon}</span>
         <span>
           {currentGarmentInfo.label} Saved ({currentCount})
         </span>
@@ -177,15 +175,14 @@ const DesignHistoryDropdown = () => {
       {isOpen && (
         <div className='mt-2 w-[310px] glassmorphism p-3 rounded-2xl shadow-2xl flex flex-col gap-2.5 border border-white/60 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 z-30'>
           {/* Header */}
-          <div className='flex items-center justify-between pb-2 border-b border-gray-200/40'>
+          <div className='flex items-center justify-between pb-2 border-b border-white/20'>
             <div className='flex items-center gap-1.5'>
-              <span className='text-sm'>{currentIcon}</span>
-              <span className='text-xs font-bold text-gray-900'>
+              <span className='text-xs font-bold text-white'>
                 {filterMode === 'current'
                   ? `${currentGarmentInfo.label} Designs`
                   : 'All Saved Designs'}
               </span>
-              <span className='text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-bold'>
+              <span className='text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full font-bold'>
                 {displayedHistory.length}
               </span>
             </div>
@@ -207,7 +204,6 @@ const DesignHistoryDropdown = () => {
             <div className='p-2 rounded-xl bg-white/80 border border-indigo-200 shadow-sm flex flex-col gap-2 animate-in fade-in duration-150'>
               <div className='flex items-center justify-between'>
                 <span className='text-[10px] font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1'>
-                  <span>{currentIcon}</span>
                   <span>Name this {currentGarmentInfo.label}</span>
                 </span>
                 <button
@@ -262,7 +258,6 @@ const DesignHistoryDropdown = () => {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <span>🌐</span>
               <span>All ({totalCount})</span>
             </button>
           </div>
@@ -271,7 +266,6 @@ const DesignHistoryDropdown = () => {
           <div className='max-h-[290px] overflow-y-auto pr-0.5 custom-scrollbar flex flex-col gap-2'>
             {displayedHistory.length === 0 ? (
               <div className='text-center py-6 flex flex-col items-center gap-1.5 text-gray-500'>
-                <span className='text-3xl'>{currentIcon}</span>
                 <p className='text-xs font-bold text-gray-700'>
                   No saved {currentGarmentInfo.label}s yet.
                 </p>
@@ -295,7 +289,6 @@ const DesignHistoryDropdown = () => {
                 const itemGarment = item.garment || 'tshirt';
                 const itemGarmentLabel =
                   GARMENTS.find((g) => g.id === itemGarment)?.label || itemGarment;
-                const itemIcon = GARMENT_ICONS[itemGarment] || '👕';
                 const dateStr = new Date(item.timestamp).toLocaleDateString([], {
                   month: 'short',
                   day: 'numeric',
@@ -331,14 +324,13 @@ const DesignHistoryDropdown = () => {
                           )}
                           {isJustApplied && !isActive && (
                             <span className='px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-emerald-600 text-white shrink-0 animate-pulse'>
-                              LOADED ✨
+                              LOADED
                             </span>
                           )}
                         </div>
 
                         <div className='text-[10px] text-gray-500 flex items-center gap-1.5 mt-0.5'>
                           <span className='capitalize font-medium text-gray-700 bg-gray-100 px-1 rounded text-[9px] flex items-center gap-0.5'>
-                            <span>{itemIcon}</span>
                             <span>{itemGarmentLabel}</span>
                           </span>
                           <span>•</span>

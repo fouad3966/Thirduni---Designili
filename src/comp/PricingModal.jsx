@@ -5,8 +5,6 @@ import state, { openCheckout } from '../store';
 import {
   INDIVIDUAL_PLANS,
   COMPANY_PLANS,
-  MANDATORY_PAYMENT_NOTICE,
-  formatCurrency,
 } from '../config/pricingPlans';
 
 const PricingModal = () => {
@@ -28,96 +26,85 @@ const PricingModal = () => {
 
   return (
     <AnimatePresence>
-      <div className='fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto'>
-        {/* Backdrop */}
+      <div className='responsive-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto'>
+        {/* Simple Soft Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={handleClose}
-          className='fixed inset-0 bg-black/80 backdrop-blur-md'
+          className='fixed inset-0 bg-slate-900/50 backdrop-blur-sm'
         />
 
-        {/* Modal Window */}
+        {/* Modal Window: Clean, Simple & Clear */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          initial={{ opacity: 0, scale: 0.96, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className='relative w-full max-w-5xl my-auto rounded-2xl bg-slate-900/95 border border-white/15 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_35px_rgba(139,92,246,0.15)] backdrop-blur-2xl text-white overflow-hidden flex flex-col max-h-[92vh]'
+          exit={{ opacity: 0, scale: 0.96, y: 10 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className='modal-window relative w-full max-w-5xl my-auto rounded-2xl bg-white border border-slate-200 shadow-2xl text-slate-800 overflow-hidden flex flex-col max-h-[92vh]'
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header Accent Bar */}
-          <div className='h-1.5 w-full bg-gradient-to-r from-violet-500 via-indigo-500 to-amber-400' />
-
-          {/* Modal Header */}
-          <div className='p-5 sm:p-6 pb-3 sm:pb-4 flex items-start justify-between gap-4 border-b border-white/10'>
+          {/* Header */}
+          <div className='px-6 pt-6 pb-4 flex items-start justify-between border-b border-slate-100'>
             <div>
-              <div className='flex items-center gap-2.5 mb-1'>
-                <span className='px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-violet-500/20 text-violet-300 border border-violet-500/40'>
-                  Official 2026 Plans
-                </span>
-                <span className='text-xs text-slate-400 hidden sm:inline'>• 1 USD = 134 DA</span>
-              </div>
-              <h2 className='text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2'>
-                Designili Creative Studio Plans
+              <h2 className='text-2xl font-bold text-slate-900 tracking-tight'>
+                Pricing & Plans
               </h2>
-              <p className='text-xs sm:text-sm text-slate-300 mt-0.5'>
-                Predictable subscription pricing for creators, luxury ateliers, and enterprise apparel teams.
+              <p className='text-sm text-slate-500 mt-1'>
+                Select the plan that fits your creative needs. Upgrade or cancel anytime.
               </p>
             </div>
 
             <button
               type='button'
               onClick={handleClose}
-              className='p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition active:scale-95'
+              className='p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition'
               aria-label='Close modal'
             >
               <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2.2' d='M6 18L18 6M6 6l12 12' />
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M6 18L18 6M6 6l12 12' />
               </svg>
             </button>
           </div>
 
-          {/* Control Toggles: Audience, Billing Cycle, Currency */}
-          <div className='px-5 sm:px-6 py-3 bg-slate-950/60 border-b border-white/10 flex flex-wrap items-center justify-between gap-3'>
-            {/* Audience Segmented Toggle */}
-            <div className='inline-flex p-1 rounded-xl bg-slate-900 border border-white/10'>
+          {/* Simple Toggles Bar */}
+          <div className='px-6 py-3 bg-slate-50/80 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3'>
+            {/* Audience Segment: Individuals vs Companies */}
+            <div className='inline-flex p-1 rounded-lg bg-slate-200/70 text-xs font-semibold'>
               <button
                 type='button'
                 onClick={() => (state.audienceTab = 'individuals')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-md transition ${
                   snap.audienceTab === 'individuals'
-                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>👤</span>
-                <span>Individual Creators</span>
+                Individual Creators
               </button>
               <button
                 type='button'
                 onClick={() => (state.audienceTab = 'companies')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-md transition ${
                   snap.audienceTab === 'companies'
-                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>🏢</span>
-                <span>Companies & Teams</span>
+                Companies & Teams
               </button>
             </div>
 
-            {/* Billing Cycle + Currency */}
-            <div className='flex items-center gap-2 sm:gap-3 flex-wrap'>
-              {/* Billing Cycle Toggle */}
-              <div className='inline-flex p-1 rounded-xl bg-slate-900 border border-white/10 items-center text-xs'>
+            {/* Billing Cycle & Currency Switchers */}
+            <div className='flex items-center gap-2.5 flex-wrap'>
+              {/* Monthly / Annual */}
+              <div className='inline-flex p-1 rounded-lg bg-slate-200/70 text-xs font-semibold'>
                 <button
                   type='button'
                   onClick={() => (state.billingCycle = 'monthly')}
-                  className={`px-3 py-1 rounded-lg font-bold transition ${
-                    !isAnnual ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+                  className={`px-3 py-1 rounded-md transition ${
+                    !isAnnual ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   Monthly
@@ -125,109 +112,106 @@ const PricingModal = () => {
                 <button
                   type='button'
                   onClick={() => (state.billingCycle = 'annual')}
-                  className={`px-3 py-1 rounded-lg font-bold transition flex items-center gap-1.5 ${
-                    isAnnual ? 'bg-violet-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+                  className={`px-3 py-1 rounded-md transition flex items-center gap-1.5 ${
+                    isAnnual ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <span>Annual</span>
-                  <span className='px-1.5 py-0.2 rounded-full text-[10px] font-black bg-amber-400 text-slate-950 uppercase'>
-                    Save ~20%
+                  <span className='px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800'>
+                    -20%
                   </span>
                 </button>
               </div>
 
-              {/* Currency Toggle */}
-              <button
-                type='button'
-                onClick={() => {
-                  state.currency = snap.currency === 'DA' ? 'USD' : snap.currency === 'USD' ? 'BOTH' : 'DA';
-                }}
-                className='px-2.5 py-1.5 rounded-xl border border-white/15 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-200 transition flex items-center gap-1'
-                title='Click to switch display currency'
-              >
-                <span className='text-amber-400'>💱</span>
-                <span>{snap.currency === 'DA' ? 'Dinar (DA)' : snap.currency === 'USD' ? 'US Dollar ($)' : 'DA & USD'}</span>
-              </button>
+              {/* Currency Segmented Toggle */}
+              <div className='inline-flex p-1 rounded-lg bg-slate-200/70 text-xs font-semibold'>
+                <button
+                  type='button'
+                  onClick={() => (state.currency = 'USD')}
+                  className={`px-3 py-1 rounded-md transition ${
+                    snap.currency === 'USD' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  USD ($)
+                </button>
+                <button
+                  type='button'
+                  onClick={() => (state.currency === 'DA' ? null : (state.currency = 'DA'))}
+                  className={`px-3 py-1 rounded-md transition ${
+                    snap.currency === 'DA' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  DA (Dinar)
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Mandatory Separation-of-Payment Banner */}
-          <div className='mx-5 sm:mx-6 mt-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-2.5 text-xs text-amber-200'>
-            <span className='text-base shrink-0'>ℹ️</span>
-            <p className='font-medium leading-relaxed'>{MANDATORY_PAYMENT_NOTICE}</p>
-          </div>
-
-          {/* Plans Grid */}
-          <div className='p-5 sm:p-6 overflow-y-auto flex-1'>
-            <div className={`grid grid-cols-1 gap-4 sm:gap-5 ${snap.audienceTab === 'companies' ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`}>
+          {/* Cards Grid */}
+          <div className='p-6 overflow-y-auto flex-1'>
+            <div className={`grid grid-cols-1 gap-5 ${snap.audienceTab === 'companies' ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`}>
               {Object.values(plans).map((plan) => {
                 const isCurrent = snap.currentPlan === plan.id;
-                const isProAnnual = plan.id === 'pro' && isAnnual;
+                const isPopular = plan.isPopular;
                 const priceObj = isAnnual ? plan.price.annual : plan.price.monthly;
                 const isFree = plan.id === 'free';
 
                 return (
                   <div
                     key={plan.id}
-                    className={`relative rounded-2xl p-5 flex flex-col justify-between transition-all duration-200 ${
-                      plan.isPopular
-                        ? 'bg-gradient-to-b from-slate-900/95 via-violet-950/30 to-slate-900/95 border-2 border-violet-500/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]'
-                        : 'bg-slate-900/70 border border-white/15 hover:border-white/25'
+                    className={`relative rounded-xl p-5 flex flex-col justify-between transition-all ${
+                      isPopular
+                        ? 'border-2 border-slate-900 bg-white shadow-md'
+                        : 'border border-slate-200 bg-slate-50/50 hover:bg-white'
                     }`}
                   >
-                    {/* Badge */}
-                    {plan.badge && (
-                      <div className='absolute -top-3 left-5'>
-                        <span
-                          className={`px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-md ${
-                            plan.isPopular
-                              ? 'bg-gradient-to-r from-violet-500 to-indigo-500 text-white'
-                              : 'bg-slate-800 text-slate-300 border border-white/10'
-                          }`}
-                        >
-                          {plan.badge}
+                    {/* Popular Pill */}
+                    {isPopular && (
+                      <div className='absolute -top-3 left-1/2 -translate-x-1/2'>
+                        <span className='px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-900 text-white shadow-sm'>
+                          Most Popular
                         </span>
                       </div>
                     )}
 
                     <div>
-                      {/* Plan Name & Tag */}
-                      <div className='flex items-center justify-between mb-2 mt-1'>
-                        <h3 className='text-lg font-black text-white'>{plan.name}</h3>
+                      {/* Plan Name & Active Status */}
+                      <div className='flex items-center justify-between mb-2'>
+                        <h3 className='text-lg font-bold text-slate-900'>{plan.name}</h3>
                         {isCurrent && (
-                          <span className='px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'>
-                            Active Plan
+                          <span className='px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200'>
+                            Active
                           </span>
                         )}
                       </div>
 
-                      {/* Pricing Display */}
-                      <div className='mb-4'>
+                      {/* Clean Price */}
+                      <div className='mb-3'>
                         {isFree ? (
-                          <div className='flex items-baseline gap-1.5'>
-                            <span className='text-3xl font-black text-white'>0 DA</span>
-                            <span className='text-slate-400 text-xs font-medium'>($0 / Forever)</span>
+                          <div className='flex items-baseline gap-1'>
+                            <span className='text-3xl font-extrabold text-slate-900'>
+                              {snap.currency === 'USD' ? '$0' : '0 DA'}
+                            </span>
+                            <span className='text-slate-500 text-xs'>/ Free Forever</span>
                           </div>
                         ) : (
                           <div>
-                            <div className='flex items-baseline gap-2'>
-                              <span className='text-3xl font-black text-white'>
+                            <div className='flex items-baseline gap-1.5'>
+                              <span className='text-3xl font-extrabold text-slate-900'>
                                 {snap.currency === 'USD'
                                   ? `$${priceObj.usd}`
                                   : `${priceObj.da.toLocaleString()} DA`}
                               </span>
-                              <span className='text-xs text-slate-400'>
+                              <span className='text-xs text-slate-500 font-medium'>
                                 {isAnnual ? '/ year' : '/ month'}
                               </span>
                             </div>
-
-                            {/* Secondary currency info */}
-                            <p className='text-[11px] text-slate-400 mt-0.5'>
+                            <p className='text-xs text-slate-400 mt-0.5'>
                               {snap.currency === 'USD'
                                 ? `≈ ${priceObj.da.toLocaleString()} DA`
                                 : `≈ $${priceObj.usd} USD`}
                               {isAnnual && priceObj.monthlyEquivalent && (
-                                <span className='text-amber-300 font-semibold ml-1.5'>
+                                <span className='text-slate-500 ml-1'>
                                   ({priceObj.monthlyEquivalent.da.toLocaleString()} DA / mo)
                                 </span>
                               )}
@@ -235,63 +219,36 @@ const PricingModal = () => {
                           </div>
                         )}
 
-                        {/* Generation allowance badge */}
-                        <div className='mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-white/10 text-xs text-slate-200'>
-                          <span className='text-violet-400 font-bold'>⚡</span>
-                          <span className='font-semibold'>
-                            {isProAnnual ? '100 AI Gens / month' : plan.generations.label}
-                          </span>
-                          {isProAnnual && (
-                            <span className='text-[10px] text-amber-400 font-bold ml-1'>
-                              (+40 bonus)
-                            </span>
-                          )}
+                        {/* Quota Badge */}
+                        <div className='mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-xs font-semibold text-slate-700'>
+                          <span>{plan.id === 'pro' && isAnnual ? '100 AI Gens / month' : plan.generations.label}</span>
                         </div>
                       </div>
 
-                      {/* Features Checklist */}
-                      <ul className='space-y-2.5 text-xs border-t border-white/10 pt-3.5 mb-6'>
-                        {plan.features.map((feat, idx) => (
-                          <li key={idx} className='flex items-start gap-2.5 leading-snug'>
-                            {feat.included ? (
-                              <span className='text-emerald-400 font-bold text-sm shrink-0'>✓</span>
-                            ) : (
-                              <span className='text-slate-500 font-bold text-xs shrink-0 mt-0.5'>🔒</span>
-                            )}
-                            <div className='flex flex-col'>
-                              <span
-                                className={`${
-                                  feat.included
-                                    ? feat.highlight
-                                      ? 'text-white font-semibold'
-                                      : 'text-slate-200'
-                                    : 'text-slate-500 line-through'
-                                }`}
-                              >
-                                {feat.text}
-                              </span>
-                              {!feat.included && feat.lockedNotice && (
-                                <span className='text-[10px] text-amber-300/90 font-medium'>
-                                  {feat.lockedNotice}
-                                </span>
-                              )}
-                            </div>
-                          </li>
-                        ))}
+                      {/* Clean Feature List */}
+                      <ul className='space-y-2 text-xs border-t border-slate-100 pt-3.5 mb-5'>
+                        {plan.features
+                          .filter((feat) => feat.included)
+                          .map((feat, idx) => (
+                            <li key={idx} className='flex items-start gap-2 text-slate-700 leading-snug'>
+                              <span className='text-emerald-600 font-bold shrink-0'>✓</span>
+                              <span>{feat.text}</span>
+                            </li>
+                          ))}
                       </ul>
                     </div>
 
-                    {/* CTA Button */}
+                    {/* Action Button */}
                     <button
                       type='button'
                       onClick={() => handleSelectPlan(plan.id)}
                       disabled={isCurrent}
-                      className={`w-full py-2.5 px-4 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-200 ${
+                      className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold transition-all ${
                         isCurrent
-                          ? 'bg-slate-800/80 text-slate-400 border border-white/10 cursor-default'
-                          : plan.isPopular
-                          ? 'bg-gradient-to-r from-violet-600 via-indigo-600 to-violet-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-lg hover:shadow-violet-500/25 active:scale-95'
-                          : 'bg-slate-800 hover:bg-slate-700 text-white border border-white/15 hover:border-white/30 active:scale-95'
+                          ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-default'
+                          : isPopular
+                          ? 'bg-slate-900 hover:bg-black text-white shadow-sm active:scale-95'
+                          : 'bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 active:scale-95'
                       }`}
                     >
                       {isCurrent ? 'Current Plan' : plan.ctaText}
@@ -302,10 +259,10 @@ const PricingModal = () => {
             </div>
           </div>
 
-          {/* Modal Footer */}
-          <div className='px-6 py-3 bg-slate-950/80 border-t border-white/10 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2'>
-            <span>🔒 Secure payments via Algérie Poste (Edahabia) & SATIM (CIB) • SSL Encrypted</span>
-            <span className='text-slate-500'>Designili SaaS Engine v2.4</span>
+          {/* Clean Subtle Footer */}
+          <div className='px-6 py-3 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2'>
+            <span>Secure checkout via Edahabia (Algérie Poste), CIB SATIM & Credit Card</span>
+            <span className='text-slate-400 text-[11px]'>Official 1 USD = 134 DA exchange rate</span>
           </div>
         </motion.div>
       </div>

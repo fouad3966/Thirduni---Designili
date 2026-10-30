@@ -122,8 +122,7 @@ const AIPicker = ({
     >
       {/* Header with AI Quota Pill */}
       <div className='flex items-center justify-between mb-2 gap-2'>
-        <label className='text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5'>
-          <span className='text-violet-400'>✨</span>
+        <label className='text-xs font-bold uppercase tracking-wider text-white'>
           AI Fabric Designer
         </label>
 
@@ -236,11 +235,6 @@ const AIPicker = ({
           disabled={generatingImg}
         />
       </div>
-
-      {/* Subtle Financial Plan Clarification */}
-      <p className='text-[10px] text-slate-400/90 text-center pt-2 leading-relaxed'>
-        💡 Only AI pattern prompts consume plan generations. Garment colors, logo uploads, and 3D preview are unlimited and free.
-      </p>
     </div>
   );
 };

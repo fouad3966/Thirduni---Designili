@@ -1,11 +1,9 @@
 export const GARMENTS = [
   { id: 'tshirt', label: 'T-shirt', color: '#EFBD48' },
   { id: 'dress', label: 'Dress', color: '#141416' },
-  // The two traditional garments start in their own fabric colour; the
-  // embroidery always keeps its gold and cream (see materials.js).
-  { id: 'caftan', label: 'Caftan', color: '#4f1f1a' },
   { id: 'karakou', label: 'Karakou', color: '#150f0d' },
   { id: 'hoodie', label: 'Hoodie', color: '#ffffff' },
+  { id: 'caftan', label: 'Caftan', color: '#4f1f1a' },
   { id: 'hat', label: 'Hat', color: '#2b2b30' },
   // White shows the shoe's own design; any other colour tints it.
   { id: 'shoes', label: 'Shoes', color: '#ffffff' },

@@ -91,11 +91,6 @@ const ColorPicker = () => {
             </div>
           )}
         </div>
-
-        {/* Free & Unlimited Guarantee */}
-        <p className='text-[9px] text-slate-500 text-center leading-tight'>
-          ✨ Base fabric colors & trim shading are 100% free & unlimited on every plan.
-        </p>
       </div>
     </div>
   );

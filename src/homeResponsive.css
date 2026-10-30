@@ -1,0 +1,51 @@
+/* Homepage rules stay separate from editor and modal layouts. */
+.app.home-mode { height: 100dvh; }
+.app.home-mode .home-buttons { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; }
+.app.home-mode .home-buttons button { min-height: 44px; }
+.app.home-mode .home-content { min-width: 0; }
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .app.home-mode .home {
+    position: absolute; inset: 0 auto 0 0; width: 50%; height: 100%;
+    display: flex; flex-direction: column; justify-content: flex-start;
+    padding: clamp(16px, 3vw, 40px); gap: 12px;
+    overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+    scroll-padding-block: 20px;
+  }
+  .app.home-mode .home header { display: block; flex-shrink: 0; }
+  .app.home-mode .home-content { width: 100%; flex: 0 0 auto; margin-block: auto; gap: clamp(12px, 2.5dvh, 24px); }
+  .app.home-mode .head-text { font-size: clamp(3rem, min(8vw, 16dvh), 7rem); line-height: 1.03; }
+  .app.home-mode .head-text br { display: block; }
+  .app.home-mode .home-content p { font-size: 14px; line-height: 1.5; }
+  .app.home-mode .home-content > div:last-child { gap: 14px; }
+  .app.home-mode .home .garment-selector { width: 100%; max-width: 100%; }
+  .app.home-mode .canvas-shell { position: absolute; top: 0; left: 50%; width: 50%; height: 100%; min-height: 0; margin: 0; }
+  .app.home-mode .model-credit { position: fixed; left: auto; right: 16px; bottom: 10px; padding: 0; max-width: 45%; }
+}
+
+@media (max-width: 767px) {
+  .app.home-mode { display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+  .app.home-mode .canvas-shell { position: relative; top: auto; left: auto; order: 0; flex: 0 0 auto; width: 100%; height: 38dvh; min-height: 180px; margin: 64px 0 0; }
+  .app.home-mode .home { position: relative; inset: auto; order: 1; width: 100%; height: auto; max-height: none; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); gap: 0; }
+  .app.home-mode .home header { display: none; }
+  .app.home-mode .home-content { width: 100%; flex: 0 0 auto; margin: 0; gap: 16px; }
+  .app.home-mode .head-text { font-size: clamp(2.5rem, 8vw, 3.5rem); line-height: 1.1; }
+  .app.home-mode .head-text br { display: none; }
+  .app.home-mode .home-content p { font-size: 14px; line-height: 1.5; }
+  .app.home-mode .home .garment-selector { width: 100%; }
+  .app.home-mode .home-buttons { width: 100%; }
+  .app.home-mode .home-buttons button { flex: 1 1 auto; padding-inline: 12px; font-size: 12px; }
+  .app.home-mode .model-credit { position: static; order: 2; padding: 0 16px 16px; max-width: none; }
+}
+
+@media (min-width: 1440px) and (max-height: 800px) {
+  .app.home-mode .home { max-height: 100%; overflow-y: auto; }
+  .app.home-mode .home-content { flex: 0 0 auto; gap: 20px; }
+  .app.home-mode .head-text { font-size: min(10rem, 16dvh); line-height: 1.05; }
+}
+
+@media (max-width: 1439px) {
+  .app.home-mode { background-color: #2b2b2b; }
+  .app.home-mode .home-content p { color: #e4e4e7; }
+  .app.home-mode .model-credit { color: #d4d4d8; }
+}

@@ -37,7 +37,7 @@ In Algeria, aspiring creators and small clothing brands often have strong appare
 | Team Member Full Name | Role | What They Built (One Honest Line) |
 | :--- | :--- | :--- |
 | **Amani Hansali** | Project Lead, CTO & Product Architect | Led the product strategy, and 12-month unit economics financial plan. |
-| **Mohamed Fouad Rabahi && Moncef Azzouz** | Full-Stack Engineering | Integrated the 3D garments and mockups, Built the studio UI enhancements, Edahabia/CIB subscription checkout, Wilaya print-shop delivery flow, and Darija NLP refinements. |
+| **Mohamed Fouad Rabahi && Moncef Azzouz** | Full-Stack Engineering & AI | Integrated the 3D garments and mockups, Built the studio UI enhancements, Edahabia/CIB subscription checkout, Wilaya print-shop delivery flow, and Darija NLP refinements. |
 | **Abdelkader Abbes && Kassouar Fatima** | AI & Darija NLP Engineering | Developed the core Algerian Darija (الدارجة) intent parser (`darja.js`) and wired the generative AI prompt-to-texture pipeline. |
 | **Abdeldjalil Benchabne** | Computer Vision & 3D Marketplace | Implemented the MediaPipe WebAssembly "Wear It" AR camera try-on pipeline and 3D Atelier City marketplace integration. |
 | **Zina Guerda** | Color Palette & Preset Contributor | Curated traditional Algerian color swatches (`palette.js`) and tested meshes, and researched local Algerian print-shop pricing benchmarks and Wilaya delivery estimates. |
